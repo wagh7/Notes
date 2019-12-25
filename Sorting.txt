@@ -1,0 +1,264 @@
+Std::sort
+
+  int myints[] = {32,71,12,45,26,80,53,33};
+  std::vector<int> myvector (myints, myints+8);               // 32 71 12 45 26 80 53 33
+
+  // using default comparison (operator <):
+  std::sort (myvector.begin(), myvector.begin()+4);           //(12 32 45 71)26 80 53 33
+
+  // using function as comp
+  std::sort (myvector.begin()+4, myvector.end(), myfunction);
+
+std::stable_sort that can be used to preserve order.
+
+C::qsort
+Implemented by quick sort. Slower than C++ sort.
+
+Comparison to c::qsort and std::sort() 1. Implementation details: As the name suggests, qsort function uses QuickSort algorithm to sort the given array, although the C standard does not require it to implement quicksort.
+C++ sort function uses introsort which is a hybrid algorithm. Different implementations use different algorithms. 
+The GNU Standard C++ library, for example, uses a 3-part hybrid sorting algorithm: 
+introsort is performed first (introsort itself being a hybrid of quicksort and heap sort) followed by an insertion sort on the result.
+2. Complexity : The C standard doesn’t talk about its complexity of qsort. 
+The new C++11 standard requires that the complexity of sort to be O(Nlog(N)) in the worst case. 
+3. Running time: STL’s sort ran faster than C’s qsort, because C++’s templates generate optimized code for a particular data type and a particular comparison function.
+
+
+
+Selection Sort
+==============
+void SelectionSort(int* Arr, int no)
+{
+	for(int i=0; i<no-1; i++)
+	{
+		for(int j=i+1; j<no; j++)
+		{
+			if(Arr[i] > Arr[j])
+			{
+				int temp = Arr[i];
+				Arr[i] = Arr[j];
+				Arr[j] = temp;
+			}
+		}
+	}
+}
+
+Bubble Sort
+===========
+void BubbleSort(int* Arr, int no)
+{
+	for(int i=0; i<no-1; i++)
+	{
+		for(int j=0; j<no; j++)
+		{
+			if(Arr[j] > Arr[j+1])
+			{
+				int temp = Arr[j];
+				Arr[j] = Arr[j+1];
+				Arr[j+1] = temp;
+			}
+		}
+	}
+}
+
+
+Insertion Sort
+==============
+void InsertionSort(int* Arr, int no)
+{
+	int j;
+	for(int i=1; i<no; i++)
+	{
+		j = i;
+		x = Arr[i];
+		
+		while(j>0 && Arr[j-1] > x)
+		{
+			Arr[j] = Arr[j-1];
+			j--;
+		}
+		Arr[j] = x;
+	}
+}
+
+
+Quick Sort
+==========
+void QuickSort(int* Arr, int low, int high)
+{
+	int l = low;
+	int r = high;
+	
+	if(low <= high)
+	{
+		l = low+1;
+		
+		while(l <= r)
+		{
+			while(Arr[low] > Arr[l])
+				l++;
+			while(Arr[low] < Arr[r])
+				r--;
+			if(l < r)
+			{
+				int temp = Arr[l];
+				Arr[l] = Arr[r];
+				Arr[r] = temp;
+			}
+		}
+		
+		int temp = Arr[r];
+		Arr[r] = Arr[low];
+		Arr[low] = temp;
+		
+		QuickSort(Arr, low, r-1);
+		QuickSort(Arr, r+1, high);
+	}
+}
+
+void heapify(int arr[], int n, int i)
+{
+    int largest = i;  // Initialize largest as root
+    int l = 2*i + 1;  // left = 2*i + 1
+    int r = 2*i + 2;  // right = 2*i + 2
+ 
+    // If left child is larger than root
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
+ 
+    // If right child is larger than largest so far
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
+ 
+    // If largest is not root
+    if (largest != i)
+    {
+        swap(arr[i], arr[largest]);
+ 
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}
+ 
+// main function to do heap sort
+void heapSort(int arr[], int n)
+{
+    // Build heap (rearrange array)
+    for (int i = n / 2 - 1; i >= 0; i--)	// n/2 because half of tree elements are leaves
+        heapify(arr, n, i);
+ 
+    // One by one extract an element from heap
+    for (int i=n-1; i>=0; i--)
+    {
+        // Move current root to end
+        swap(arr[0], arr[i]);
+ 
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
+Counting Sort
+==============
+http://www.geeksforgeeks.org/counting-sort/
+
+Time complexity:
+O(n+k)  :  n is a total number of elements and k is the range of elements (e.g. 1 to 100)
+  
+void countSort(char arr[])
+{
+    // The output character array that will have sorted arr
+    char output[strlen(arr)];
+ 
+    // Create a count array to store count of individul-
+    // characters and initialize count array as 0
+    int count[RANGE + 1], i;
+    memset(count, 0, sizeof(count));
+ 
+    // Store count of each character
+    for(i = 0; arr[i]; ++i)
+        ++count[arr[i]];
+ 
+    // Change count[i] so that count[i] now contains actual
+    // position of this character in output array
+    for (i = 1; i <= RANGE; ++i)
+        count[i] += count[i-1];
+ 
+    // Build the output character array
+    for (i = 0; arr[i]; ++i)
+    {
+        output[count[arr[i]]-1] = arr[i];
+        --count[arr[i]];
+    }
+ 
+    // Copy the output array to arr, so that arr now
+    // contains sorted characters
+    for (i = 0; arr[i]; ++i)
+        arr[i] = output[i];
+}
+
+Merge Sort
+==========
+
+void merge(int Arr[], int left, int mid, int right)
+{
+	int i=left;
+	int j=mid+1;
+	int k=0;
+	int temp[50];
+	while(i<=mid && j<=right)
+	{
+		if(Arr[i]<Arr[j])
+		{
+			temp[k] = Arr[i];
+			k++;
+			i++;
+		}
+		else
+		{
+			temp[k] = Arr[j];
+			k++;
+			j++;
+		}
+	}
+	while(i<=mid)
+	{
+		temp[k]=Arr[i];
+		k++;
+		I++;
+	}
+	while(j<=right)
+	{
+		temp[k]=Arr[j];
+		k++;
+		j++;
+	}
+	for(int i=left; i<k; i++)
+		Arr[i]=temp[i];
+
+}
+void mergeSort(int Arr[], int left, int right)
+{
+	if(left<right)
+	{
+		int mid;
+		mid = (left+right)/2;
+		
+		mergeSort(Arr, left, mid);
+		mergeSort(Arr, mid+1, right);
+		merge(Arr, left, mid, right);
+	}
+	return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
