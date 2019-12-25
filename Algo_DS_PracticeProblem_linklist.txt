@@ -1,0 +1,966 @@
+<Algo_Example>
+<Array>
+<1>
+You are in an infinite 2D grid where you can move in any of the 8 directions :
+
+	(x,y) to 
+    (x+1, y), 
+    (x - 1, y), 
+    (x, y+1), 
+    (x, y-1), 
+    (x-1, y-1), 
+    (x+1,y+1), 
+    (x-1,y+1), 
+    (x+1,y-1) 
+You are given a sequence of points and the order in which you need to cover the points. 
+Give the minimum number of steps in which you can achieve it. You start from the first point.
+
+Example :
+
+Input : [(0, 0), (1, 1), (1, 2)]
+Output : 2
+
+IMP: to covert integer to positive number
+a = abs(a); 
+</1>
+
+<2>
+DONE
+Given a non-negative number represented as an array of digits,
+add 1 to the number ( increment the number represented by the digits ).
+The digits are stored such that the most significant digit is at the head of the list.
+Example:
+If the vector has [1, 2, 3]
+the returned vector should be [1, 2, 4]
+as 123 + 1 = 124.
+</2>
+
+<3>
+DONE
+Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+
+For example:
+Given the array [-2,1,-3,4,-1,2,1,-5,4],
+the contiguous subarray [4,-1,2,1] has the largest sum = 6.
+For this problem, return the maximum sum.
+</3>
+
+<NOT_IMP>
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
+You may assume that the intervals were initially sorted according to their start times.
+Example 1:
+Given intervals [1,3],[6,9] insert and merge [2,5] would result in [1,5],[6,9].
+Example 2:
+Given [1,2],[3,5],[6,7],[8,10],[12,16], insert and merge [4,9] would result in [1,2],[3,10],[12,16].
+This is because the new interval [4,9] overlaps with [3,5],[6,7],[8,10].
+Make sure the returned intervals are also sorted.
+</NOT_IMP>
+
+<4>
+Given an m x n matrix of 0s and 1s, if an element is 0, set its entire row and column to 0.
+Do it in place.
+
+Solution Approach:
+Define two array each one for row and col.
+Traverse through the matrix and set value of array row[r]=1 and col[c]=1 if A[r][c]==0,
+
+Then again traverse to matrix row and check if row[r]==1 if so then set A[r][c]=0
+Same for col[].
+
+void setZeroes(int** A, int n11, int n12) {
+    	
+    int i;
+	int j;
+
+	int* r = (int*)calloc(n11, sizeof(int));
+	int* c = (int*)calloc(n12, sizeof(int));
+	//int *r = (int*)calloc(n11, sizeof(int)), *c = (int*)calloc(n12, sizeof(int));
+	for (i = 0; i < n11; i++)
+	{
+		for (j = 0; j < n12; j++)
+		{
+			if (A[i][j] == 0)
+			{
+				r[i] = c[j] = 1;
+	}}}
+	for (i = 0; i < n11; i++)
+	{
+		if (r[i] == 1)
+		{
+			for (j = 0; j < n12; j++)
+			{
+				A[i][j] = 0;
+	}}}
+	for (j = 0; j < n12; j++)
+	{
+		if (c[j] == 1)
+		{
+			for (i = 0; i < n11; i++)
+			{
+				A[i][j] = 0;
+	}}}
+}
+</4>
+
+<5>
+You are given a read only array of n integers from 1 to n.
+Each integer appears exactly once except A which appears twice and B which is missing.
+Return A and B.
+Note: Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+Note that in your output A should precede B.
+
+e.g. Arr[]={2,4,1,4,5}	: here 3 is missing and 4 is came twise
+So output should be A=4 and B=3
+
+Solution Approach:
+Calculate below values:
+SumA (SumOfArrElements)			= 2+4+1+4+5		
+SumA2(SumOfSquareOfArrElements)	= 4+16+1+16+25
+SumN (SumOfElementsFrom 1 to n)	= 1+2+3+4+5
+SumN2 (SumOfSquareOf 1 to n)	= 1+4+9+16+25   :  SumN * (2*n + 1)/3
+
+x = SumN - SumA
+y = (SumN2 - SumA2)/x 
+
+A = (y-x)/2
+B = A + x
+
+</5>
+
+<6>
+Given an unsorted integer array, find the first missing positive integer.
+Example:
+Given [1,2,0] return 3,
+[3,4,-1,1] return 2,
+[-8, -7, -6] returns 1
+Your algorithm should run in O(n) time and use constant space.
+
+Sol :
+<!--
+	int Arr[4] = {1,3,4,7};
+	int test[5] = {0};
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (Arr[i] <= 4)
+			test[Arr[i]] = 1;
+	}
+
+	for (int i = 1; i < 5; i++)
+	{
+		if (test[i] == 0)
+		{
+			cout << i;
+			break;
+		}
+	}
+-->
+</6>
+<7>
+Given a read only array of n + 1 integers between 1 and n, 
+find one number that repeats in linear time using less than O(n) space and traversing the stream sequentially O(1) times.
+Sample Input:
+[3 4 1 4 1]
+Sample Output:
+1
+If there are multiple possible answers ( like in the sample case above ), output any one.
+If there is no duplicate, output -1
+
+	<with-extra-space-possible>
+		<!--
+		int repeatedNumber(const int* A, int n1)
+		{
+			//int* Arr = new int[n1+1]();
+			/*
+			int* Arr = (int*)malloc(sizeof(int)*(n1+1));
+			memset(Arr,0, sizeof(int)*(n1+1));
+
+			int i;
+			for (i = 0; i < n1; i++)
+			{
+				if (Arr[A[i]] == 0)
+					Arr[A[i]] = 1;
+				else
+					return A[i];
+			}
+			if (i == n1)
+			{
+				return -1;
+			}
+		}
+		-->
+	</with-extra-space-possible>
+	<with-no-extra-space>
+								Not get easy way/solution.
+	</with-no-extra-space>
+</7>
+
+6.
+Find out the maximum sub-array of non negative numbers from an array.
+The sub-array should be continuous. That is, a sub-array created by choosing the second and fourth element and skipping the third element is invalid.
+Maximum sub-array is defined in terms of the sum of the elements in the sub-array. Sub-array A is greater than sub-array B if sum(A) > sum(B).
+
+7.
+Given an index k, return the kth row of the Pascal’s triangle.
+hint:
+x =1;
+R[i] = x;
+x = x * (A-i) / (i+1);
+
+<8>
+<!--  NOT DONE -->
+Given a list of non negative integers, arrange them such that they form the largest number.
+For example:
+Given [3, 30, 34, 5, 9], the largest formed number is 9534330.
+Note: The result may be very large, so you need to return a string instead of an integer.
+</8>
+</Array>
+
+<LinkList>
+	<1>
+		Given a singly linked list, determine if its a palindrome. Return 1 or 0 denoting if its a palindrome or not, respectively.
+		http://www.geeksforgeeks.org/function-to-check-if-a-singly-linked-list-is-palindrome/
+		Method 1:
+			Traverse Link list and store elements into STACK
+			then compare element one by one from STACK and LinkList.
+		Method 2:
+			Find out the mid of LinkList.(traverse tree with slow ptr and fast ptr - slow = slow->next and fast=fast->next->next)
+			in these way when our fast reached to the end of tree slow pointer will point to the middle ptr.
+			Ten reverse second half.
+			Then compare two halves.
+	</1>
+	<2>
+		Given a sorted linked list, delete all duplicates such that each element appear only once.
+		For example,
+		Given 1->1->2, return 1->2.
+		Given 1->1->2->3->3, return 1->2->3.
+	</2>
+	<3>
+		Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list.
+		For example,
+		Given 1->2->3->3->4->4->5, return 1->2->5.
+		Given 1->1->1->2->3, return 2->3
+	</3>
+	<4>
+		Merge two sorted linked lists and return it as a new list. 
+		The new list should be made by splicing together the nodes of the first two lists, and should also be sorted.
+		For example, given following linked lists :
+		  5 -> 8 -> 20 
+		  4 -> 11 -> 15
+		The merged list should be :
+		4 -> 5 -> 8 -> 11 -> 15 -> 20
+	</4>
+	<5>
+	Given a list, rotate the list to the right by k places, where k is non-negative.
+	For example:
+	Given 1->2->3->4->5->NULL and k = 2,
+	return 4->5->1->2->3->NULL.
+	
+	Cases to be test:
+	1. if rotate number is bigger than the size of list.
+	2. If list have only one element.
+	3. If list is empty.
+	
+	Solution : For similar example : http://www.geeksforgeeks.org/rotate-a-linked-list/
+	</5>
+	
+	<6>
+		<!-- *** -->
+		Sort a linked list using insertion sort.
+		
+		// function to sort a singly linked list using insertion sort
+		void insertionSort(struct Node **head_ref)
+		{
+			// Initialize sorted linked list
+			struct Node *sorted = NULL;
+		 
+			// Traverse the given linked list and insert every
+			// node to sorted
+			struct Node *current = *head_ref;
+			while (current != NULL)
+			{
+				// Store next for next iteration
+				struct Node *next = current->next;
+		 
+				// insert current in sorted linked list
+				sortedInsert(&sorted, current);
+		 
+				// Update current
+				current = next;
+			}
+		 
+			// Update head_ref to point to sorted linked list
+			*head_ref = sorted;
+		}
+		 
+		/* function to insert a new_node in a list. Note that this
+		  function expects a pointer to head_ref as this can modify the
+		  head of the input linked list (similar to push())*/
+		void sortedInsert(struct Node** head_ref, struct Node* new_node)
+		{
+			struct Node* current;
+			/* Special case for the head end */
+			if (*head_ref == NULL || (*head_ref)->data >= new_node->data)
+			{
+				new_node->next = *head_ref;
+				*head_ref = new_node;
+			}
+			else
+			{
+				/* Locate the node before the point of insertion */
+				current = *head_ref;
+				while (current->next!=NULL &&
+					   current->next->data < new_node->data)
+				{
+					current = current->next;
+				}
+				new_node->next = current->next;
+				current->next = new_node;
+			}
+		}
+				
+	</6>
+	
+	<7>
+		<!-- Not Done -->
+		Sort a linked list in O(n log n) time using constant space complexity.
+	</7>
+	
+	<8>
+		Reverse a linked list from position m to n. Do it in-place and in one-pass.
+		For example:
+		Given 1->2->3->4->5->NULL, m = 2 and n = 4,
+		return 1->4->3->2->5->NULL.
+	</8>
+	
+	<9>
+		Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+		Try solving it using constant additional space.
+		<CODE>
+			node* findCycle(node* A)
+			{
+				node* slow_ptr = A;
+				node* fast_ptr = A;
+				int flag=0;
+
+				// To find there is a cycle or not
+				while (slow_ptr->next != NULL && fast_ptr != NULL && fast_ptr->next != NULL)
+				{
+					slow_ptr = slow_ptr->next;
+					fast_ptr = fast_ptr->next->next;
+
+					if (slow_ptr == fast_ptr)
+					{
+						flag = 1;
+						break;
+					}
+				}
+					if (flag == 0)
+						return NULL;
+
+					// to find the node where cycle starts
+					slow_ptr = A;
+					while (slow_ptr != fast_ptr)
+					{
+						fast_ptr = fast_ptr->next;
+						slow_ptr = slow_ptr->next;
+					}
+					return slow_ptr;
+					
+			}
+		</CODE>
+	</9>
+	
+	<10>
+	<!--  NOT DONE -->
+	Given a singly linked list
+    L: L0 → L1 → … → Ln-1 → Ln,
+	reorder it to:
+    L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → …
+	You must do this in-place without altering the nodes’ values.
+	For example,
+	Given {1,2,3,4}, reorder it to {1,4,2,3}.
+		<APPROACH>
+			1. Divide list into two halves. Find mid node etc.
+			2. Reverse second half.
+			3. Then Merge first half and second(reverse) half as per condition given.
+		</APPROACH>
+	</10>
+	
+	<11>
+		You are given two linked lists representing two non-negative numbers. 
+		The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+		Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+		Output: 7 -> 0 -> 8
+			342 + 465 = 807
+		Make sure there are no trailing zeros in the output list
+		So, 7 -> 0 -> 8 -> 0 is not a valid response even though the value is still 807.
+		
+		<APPROACH>
+			1. Reverse List 1.
+			2. Reverse List 2.
+			3. Add digits from List 1. = s1
+			4. Add digits from List 2. = s2
+			5. Add s1+s2 = s
+			6. Add digits in s to new List.
+		</APPROACH>
+	</11>
+	
+	<12>
+		<!-- NOT DONE -->
+		Given a linked list, swap every two adjacent nodes and return its head.
+		For example,
+		Given 1->2->3->4, you should return the list as 2->1->4->3.
+		Your algorithm should use only constant space. You may not modify the values in the list, only nodes itself can be changed.
+	</12>
+</LinkList>
+
+<HASH>
+	<1>
+		For Given Number N find if its COLORFUL number or not.
+		N = 23
+		2 3 23
+		2 -> 2
+		3 -> 3
+		23 -> 6
+		this number is a COLORFUL number since product of every digit of a sub-sequence are different. 
+		Output : 1
+	</1>
+	
+	<2>
+		<!-- NOT DONE -->
+		Find the largest continuous sequence in a array which sums to zero.
+		Example:
+		Input:  {1 ,2 ,-2 ,4 ,-4}
+		Output: {2 ,-2 ,4 ,-4}
+	</2>
+	
+	<3>	
+		Given an array of integers, find two numbers such that they add up to a specific target number.
+		<!-- 
+		The function twoSum should return indices of the two numbers such that they add up to the target, 
+		where "index1 < index2". Please note that your returned answers (both index1 and index2 ) are not zero-based. 
+		Put both these numbers in order in an array and return the array from your function ( Looking at the function signature will make things clearer ). 
+		Note that, if no pair exists, return empty list.
+		-->
+		Example :
+		Input: [2, 7, 11, 15], target=9
+		Output: index1 = 1, index2 = 2
+	</3>
+	
+	<4>
+		<!-- NOT DONE -->
+		Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
+		Sample Input :
+		(1, 1)
+		(2, 2)
+		Sample Output :
+		2
+		You will be give 2 arrays X and Y. Each point is represented by (X[i], Y[i])
+	</4>
+	
+	<5>
+		<!-- NOT DONE -->
+		You are given a string, S, and a list of words, L, that are all of the same length.
+		Find all starting indices of substring(s) in S that is a concatenation of each word in L exactly once and without any intervening characters.
+		Example :
+		S: "barfoothefoobarman"
+		L: ["foo", "bar"]
+		You should return the indices: [0,9].
+		(order does not matter).
+	</5>
+	
+	<6>
+		<!-- NOT DONE -->
+		Given a string, 
+		find the length of the longest substring without repeating characters.
+		Example:
+		The longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3.
+		For "bbbbb" the longest substring is "b", with the length of 1.
+	</6>
+</HASH>
+
+<Tree>
+	<1>
+		<!-- NOT DONE -->
+		Given a binary tree, print a vertical order traversal of it.
+		Example :
+		Given binary tree:
+		v = vertical line
+			   6
+			/     \
+		    3      7
+		  /  \       \
+		 2    5       9
+		v1 v2 v3  v3  v4	
+
+		returns
+		[
+			[2],  	{v1}
+			[3],	{v2}
+			[6 5],	{v3}
+			[7],	{v4}
+			[9]		{v5}
+		]
+		Note : If 2 Tree Nodes shares the same vertical level then the one with lesser depth will come first.
+	</1>
+
+	<2>
+		<!-- NOT DONE -->
+		Given a binary tree, return the inorder traversal of its nodes’ values.
+		Example :
+		Given binary tree
+
+		   1
+			\
+			 2
+			/
+		   3
+		return [1,3,2].
+		Using recursion is not allowed.
+	</2>
+	
+	<3>
+		<!-- NOT DONE -->
+		Given a binary tree, return the postorder traversal of its nodes’ values.
+		Example :
+		Given binary tree
+
+		   1
+			\
+			 2
+			/
+		   3
+		return [3,2,1].
+		Using recursion is not allowed.
+	</3>
+	
+	<4>
+		<!-- NOT DONE -->
+		Given a binary tree, return the preorder traversal of its nodes’ values.
+		Example :
+		Given binary tree
+
+		   1
+			\
+			 2
+			/
+		   3
+		return [3,2,1].
+		Using recursion is not allowed.
+	</4>
+	
+	<5>
+		<!-- DONE -->
+		ZigZag Level Order Traversal BTBookmark Suggest Edit
+		Given a binary tree, return the zigzag level order traversal of its nodes’ values. 
+		(ie, from left to right, then right to left for the next level and alternate between).
+		Example : 
+		Given binary tree
+
+			3
+		   / \
+		  9  20
+			/  \
+		   15   7
+		return
+		[
+				 [3],
+				 [20, 9],
+				 [15, 7]
+		]
+		
+		Approach:
+		Collect elements level wise and put into vector of vector. Code is in VS.
+		<!--
+		Data Structure:
+		vector<vector<int>> output
+		stack<TreeNode*> curr_layer
+		stack<TreeNode*> next_layer
+		vector<int> output_Layer
+		TreeNode* node;
+		-->
+		
+	</5>
+	
+	<6>
+		Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+		Example :
+		Given the below binary tree and sum = 22,
+					  5
+					 / \
+					4   8
+				   /   / \
+				  11  13  4
+				 /  \      \
+				7    2      1
+		return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
+		Return 0 / 1 ( 0 for false, 1 for true ) for this problem.
+		
+		Approach:
+		Traverse tree using recursion in PreOrder. And when keep total and element till leaf come.
+		Once leafe comes compare total is equal to given sum.
+		<!--
+		Code :
+		if (root != NULL)
+		{
+			sum = sum + root->val;
+			if (root->left == NULL && root->right == NULL)
+			{
+				cout << sum << endl;
+				if(GivenSum == sum)
+					return true;
+				sum = 0;
+			}
+			sumNodesInPath(root->left, sum);
+			sumNodesInPath(root->right, sum);	
+		}
+		return false;
+		-->
+	</6>
+	<7>
+		Root to Leaf Paths With Sum
+
+		Given a binary tree and a sum, find all root-to-leaf paths where each path’s sum equals the given sum.
+		For example:	
+		Given the below binary tree and sum = 22,
+
+					  5
+					 / \
+					4   8
+				   /   / \
+				  11  13  4
+				 /  \    / \
+				7    2  5   1
+		return
+		[
+		   [5,4,11,2],
+		   [5,8,4,5]
+		]
+		
+		Approach:
+			Same as above.
+	</7>
+	
+	<8>
+		Max Depth of Binary TreeBookmark Suggest Edit
+
+		Given a binary tree, find its maximum depth.
+		The maximum depth of a binary tree is the number of nodes along the longest path from the root node down to the farthest leaf node.
+		 NOTE : The path has to end on a leaf node. 
+		Example :
+
+				 1
+				/
+			   2
+		max depth = 2.
+		
+		Approach:
+			Same as above.
+	</8>
+	
+	<9>
+		Min Depth of Binary TreeBookmark Suggest Edit
+	
+		Given a binary tree, find its minimum depth.
+		The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+		NOTE : The path has to end on a leaf node. 
+		Example :
+				 1
+				/
+			   2
+		min depth = 2.
+	</9>
+	
+	<10>
+		Sum Root to Leaf Numbers
+		
+		Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+		An example is the root-to-leaf path 1->2->3 which represents the number 123.
+		Find the total sum of all root-to-leaf numbers % 1003.
+		Example :
+
+			1
+		   / \
+		  2   3
+		The root-to-leaf path 1->2 represents the number 12.
+		The root-to-leaf path 1->3 represents the number 13.
+		Return the sum = (12 + 13) % 1003 = 25 % 1003 = 25.
+	</10>
+	
+	<11>
+		Given a binary tree, determine if it is height-balanced.
+
+		Height-balanced binary tree : is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1. 
+		Return 0 / 1 ( 0 for false, 1 for true ) for this problem
+		Example :
+
+		Input : 
+			  1
+			 / \
+			2   3
+		Return : True or 1 
+		Input 2 : 
+			 3
+			/
+		   2
+		  /
+		 1
+		Return : False or 0 
+			 Because for the root node, left subtree has depth 2 and right subtree has depth 0. 
+			 Difference = 2 > 1.
+		
+		Code:
+		<!--
+		bool isBalanced(TreeNode *root) 
+		{
+			if (root == NULL) return true;
+			return isBalancedWithDepth(root).second;
+		}
+
+		pair<int, bool> isBalancedWithDepth(TreeNode *root) 
+		{
+			if (root == NULL) return make_pair(0, true);
+			pair<int, bool> left = isBalancedWithDepth(root->left);
+			pair<int, bool> right = isBalancedWithDepth(root->right);
+			int depth = max(right.first, left.first) + 1;
+			// The subtree is balanced if right subtree is balanced, left subtree is balanced 
+			// and the depth difference is less than 1. 
+			bool isbalanced = right.second && left.second && (abs(right.first - left.first) < 2);
+			return make_pair(depth, isbalanced);
+		}
+		-->
+	</11>
+	
+	<12>
+		Identical Binary TreesBookmark Suggest Edit
+
+		Given two binary trees, write a function to check if they are equal or not.
+		Two binary trees are considered equal if they are structurally identical and the nodes have the same value.
+		Return 0 / 1 ( 0 for false, 1 for true ) for this problem
+		Example :
+
+		Input : 
+
+		1       1
+		/ \     / \
+		2   3   2   3
+
+		Output : 
+		1 or True
+		
+		Approach:
+		<!--
+		bool compareTwoTree(TreeNode* root1, TreeNode* root2)
+		{
+			if (root1 == NULL && root2 == NULL)
+			{
+				return true;
+			}
+
+			if (root1 == NULL || root2 == NULL)
+			{
+				return true;
+			}
+
+			return (root1->val == root2->val) && (compareTwoTree(root1->left, root2->left)) && (compareTwoTree(root1->right, root2->right));
+		}
+		-->
+	</12>
+	
+	<13>
+		Invert the Binary Tree
+
+		Given a binary tree, invert the binary tree and return it. 
+		Look at the example for more details.
+
+		Example : 
+		Given binary tree
+
+			 1
+		   /   \
+		  2     3
+		 / \   / \
+		4   5 6   7
+		invert and return
+
+			 1
+		   /   \
+		  3     2
+		 / \   / \
+		7   6 5   4
+		
+		Approach:
+		<!--
+			TreeNode* invertTree(TreeNode *root) 
+			{
+				if (!root) return root;
+				root->left = invertTree(root->left);
+				root->right = invertTree(root->right);
+				TreeNode *temp = root->left;
+				root->left = root->right;
+				root->right = temp;
+				return root;
+			}
+		-->
+	</13>
+	
+	<14>
+		Kth Smallest Element In Tree
+		
+		Given a binary search tree, write a function to find the kth smallest element in the tree.
+		Example :
+		Input : 
+		  2
+		 / \
+		1   3
+
+		and k = 2
+		Return : 2
+		As 2 is the second smallest element in the tree.
+		
+		Approach:
+			As given tree is a binary search tree that means all elementrs in left sub-tree is smaller than root.
+			If there are less than k elements ar lest sub-tree then only we need to look into right side of the tree.
+	</14>	
+</Tree>
+
+<StackANDQueue>
+	<1>
+		Redundant Braces
+
+		Write a program to validate if the input string has redundant braces?
+		Return 0/1 
+		 0 -> NO 1 -> YES 
+
+		Input will be always a valid expression
+		and operators allowed are only + , * , - , /
+		Example:
+		((a + b)) has redundant braces so answer will be 1
+		(a + (a + b)) doesn't have have any redundant braces so answer will be 0
+	</1>
+	
+	<2>
+		Nearest Smaller Element
+
+		Given an array, find the nearest smaller element G[i] for every element A[i] in the array such that the element has an index smaller than i.
+
+		More formally,
+		G[i] for an element A[i] = an element A[j] such that 
+			j is maximum possible AND 
+			j < i AND
+			A[j] < A[i]
+		Elements for which no smaller element exist, consider next smaller element as -1.
+
+		Example:
+		<!--
+		Input : A : [4, 5, 2, 10]
+		Return : [-1, 4, -1, 2]
+
+		Example 2:
+
+		Input : A : [3, 2, 1]
+		Return : [-1, -1, -1]
+		-->
+		
+		Approach:
+		<!--
+			stack<int> st;
+			vector<int> res;
+			res.resize(A.size());
+			int len = A.size();
+			int i = 0;
+
+			while (i < len)
+			{
+				while (!st.empty() && st.top() >= A[i]) 
+					st.pop();
+
+				if (st.empty())
+				{
+					res[i] = -1;
+					
+				}
+				else
+				{
+					res[i]=st.top();
+				}
+				st.push(A[i]);
+				i++;
+			}
+
+			return res;
+		-->
+	</2>
+	
+	<3>
+		Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
+
+		Example :
+		Given [0,1,0,2,1,0,1,3,2,1,2,1], return 6.
+		
+		The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1].
+		In this case, 6 units of rain water (blue section) are being trapped.
+		
+		Approach:
+		<!--
+			Fun(int* A, int n)
+			{
+				int left = 0, right = n-1;
+				int maxleft=0, maxright = 0;
+				int res=0;
+				while(left <= right)
+				{
+					if(A[left] <= A[right])
+					{
+						if(A[left] > maxleft)
+							maxleft = A[left];
+						else
+							res += maxleft - A[left];
+					}
+					else
+					{
+						if(A[right] > maxright)
+							maxright = A[right];
+						else
+							res += maxright - A[right];
+					}
+				}
+				return res;
+			}
+		-->
+	</3>
+	
+	
+	<4>
+		Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+		
+		<!--
+		stack<int> elementStack;
+        stack<int> minimumStack;
+        int minElement = -1;
+		
+		void push(int x) {
+            elementStack.push(x);
+            if(elementStack.size() == 1 || x <= minElement) {
+                minimumStack.push(x);
+                minElement = x;
+            } 
+        }
+
+        void pop() {
+            if (elementStack.top() == minElement) {
+                minimumStack.pop();
+                if (!minimumStack.empty()) {
+                    minElement = minimumStack.top();
+                } else {
+                    minElement = -1;
+                }
+            }
+            elementStack.pop();
+        }
+		-->
+	</4>
+</StackANDQueue>
+
+</Algo_Example>
