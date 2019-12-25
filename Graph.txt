@@ -384,4 +384,56 @@ Algorithm
 	….c) Update distance value of all adjacent vertices of u. To update the distance values, iterate through all adjacent vertices. For every adjacent vertex v, if sum of distance value of u (from source) and weight of edge u-v, is less than the distance value of v, then update the distance value of v.
 
 
+
+===========================================================
+						Hash Table
+===========================================================
+Existing data structure for search have time complexity:
+	link list : n
+	binary search : log n
+	hash table : 1
+
+1. Hashing and Hash table in data structure and Algo
+Hash function:
+1. Division Method
+2. Multiplication method
+	Collision may happened in both methods.
+
+2. Good hash functions properties:
+	1. Easy compute
+	2. Even distribution
+	3. Less collision
+
+3. Collision:
+	Resolved by chaining.
+Load factor:
+	= Number of elements / Table size
+
+4. Collision resolution with open addressing
+	(linear probing)
+	- Remove extra memory and data structure
+	- searching is problematic 
+	- But table size should be equal to or greater than number of elements.
+	- clustering
+	
+5. Quadratic probing
+	h(x) = (T(x) +  	f(i))/mod T_size
+	here , f(i) = i*i;
+	
+Open hashing : use link list to avoid collision occurs
+closed hashing : find the another empty place in table itself to avoid collision
+
+6. Double hashing collision Resolution
+	used second hashing if collision occurs.
+	e.g. hash2 : r - (x % r)
+	r = any prime number
+	x = number to be hashed into hash table.
+	
+
+Application uses Hash Table:
+
+C++ compiler:
+uses hash table to track of variable/functions etc used and their defination with line number.
+
+ 
  
