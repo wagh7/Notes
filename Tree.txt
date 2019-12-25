@@ -1,0 +1,796 @@
+
+Tree:
+
+Full Binary Tree:
+A full binary tree (sometimes proper binary tree or 2-tree) is a tree in which every node other than the leaves has two children.
+
+Complete Binary Tree:
+A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes are as far left as possible.
+
+
+Height and Depth of the Binary tree:
+https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-depth-and-height
+
+The depth of a node is the number of edges from the node to the tree's root node.
+A root node will have a depth of 0.
+
+The height of a node is the number of edges on the longest path from the node to a leaf.
+A leaf node will have a height of 0.
+
+Level of Root node is 1.
+
+Binary Search Tree BST:
+-------------------
+Create Binary Search Tree
+
+Insert into BST(inorder traversal of BST always produces sorted sequence.)
+Delete from BST
+Search element into BST
+
+Traversing in BST
+- Inorder	LDR
+- Preorder	DLR
+- Postorder	LRD
+
+Time complexity for all above operation in BST:
+O(log n) : height of tree.
+
+If Tree is balanced then height of tree is small(not high) so time complexity is O(log n)
+
+But in worst case(Tree is not balnced) then height of tree is large, So time complexity may be
+O(n) in worst case.
+
+
+Balancing BST
+--------------
+Every complete binary tree is an AVL tree, but not necessarily the other way around.
+
+An Efficient Solution can construct balanced BST in O(n) time with minimum possible height. Below are steps.
+
+Traverse given BST in inorder and store result in an array. This step takes O(n) time. 
+Note that this array would be sorted as inorder traversal of BST always produces sorted sequence.
+Build a balanced BST from the above created sorted array using the recursive approach discussed here. 
+This step also takes O(n) time as we traverse every element exactly once and processing an element takes O(1) time.
+
+
+Red Black Tree
+==============
+It is a self balancing BST
+To avoid the above time complexity of O(n) in worst case,
+in Red Black tree has some rules:
+0. Every node in BST is either Red or Black.
+1. Root of the BST is Black only.
+2. Red node has only black childs(both left and right should be black)
+3. All leaf node should be black.
+4. All path in BST from Root node have same number of black nodes.
+
+Implemantation ?
+
+----------------------------------------------------------
+Insertion in Red-Black tree
+http://www.geeksforgeeks.org/red-black-tree-set-2-insert/
+https://www.cs.auckland.ac.nz/software/AlgAnim/red_black.html
+----------------------------------------------------------
+
+In Red-Black tree, we use two tools to do balancing.
+1) Recoloring(When uncle's color is Red)
+2) Rotation(When uncle's color is Black)
+
+Let x be the newly inserted node.
+1) Perform standard BST insertion and make the color of newly inserted nodes as RED.
+2) If x is root, change color of x as BLACK (Black height of complete tree increases by 1).
+
+3) Do following if color of x’s parent is not BLACK or x is not root.
+….a) If x’s uncle is RED (Grand parent must have been black from property 4)
+……..(i) Change color of parent and uncle as BLACK.
+……..(ii) color of grand parent as RED.
+……..(iii) Change x = x’s grandparent, repeat steps 2 and 3 for new x.
+
+
+b) If x’s uncle is BLACK, then there can be four configurations for x, x’s parent (p) and x’s grandparent (g) (This is similar to AVL Tree)
+……..i) Left Left Case (p is left child of g and x is left child of p)
+……..ii) Left Right Case (p is left child of g and x is right child of p)
+……..iii) Right Right Case (Mirror of case a)
+……..iv) Right Left Case (Mirror of case c)
+
+
+All four cases when Uncle is BLACK
+
+Left-Left Case (See g, p and x)
+	Right rotate g.
+	swap color of g and p.
+
+Left-Right Case:
+	Left rotate p.
+	Apply Left-Left case.
+	
+Right-Right Case:
+	Left rotate g.
+	swap color of g and p.
+
+Right-Left Case:
+	Right rotate p.
+	Apply Right-Right case.
+
+-------------------------------
+Deletion
+
+-------------------------------
+The main property that violates after insertion is two consecutive reds. 
+In delete, the main violated property is, change of black height in subtrees as deletion of a black node 
+may cause reduced black height in one root to leaf path.
+
+Deletion is fairly complex process.  To understand deletion, notion of double black is used.  
+When a black node is deleted and replaced by a black child, the child is marked as double black. 
+The main task now becomes to convert this double black to single black.
+
+Time Complexity:
+---------------
+In both Average and Worst case: 
+Search/Insert/Delete : O(logn)
+
+Space Complexity: O(n)
+-------------------------
+
+Used in:
+---------
+C++ : STL - MAP/SET
+Linux kernel: completely fair scheduler, linux/rbtree.h
+Java: java.util.TreeMap , java.util.TreeSet .
+
+
+=======================================================================================================
+AVL Tree
+=======================================================================================================
+AVL tree is a Self Balancing Binary Search Tree.
+In AVL tree differences between heights of left and right subtrees for every node is -1,0,1.
+AVL data structure also stores height of the node.
+
+Rotation
+--------
+Rotation to balanced unbalanced Tree
+LL Rotation
+RR Roataion
+LR Rotation
+RL Rotation
+
+a) y is left child of z and x is left child of y (Left Left Case)
+b) y is left child of z and x is right child of y (Left Right Case)
+c) y is right child of z and x is right child of y (Right Right Case)
+d) y is right child of z and x is left child of y (Right Left Case)
+
+Use
+----
+AVL trees are used frequently for quick searching as searching takes O(Log n) because tree is balanced.
+Where as insertion and deletions are comparatively more tedious and slower as at every insertion and deletion, it requires re-balancing.
+Hence, AVL trees are preferred for application, which are search intensive.
+
+Time Complexity
+---------------
+Best case : O(log n)
+Worst case: O(n)
+
+
+B-Tree
+======
+B tree of order M is an m-way search tree.
+
+Difference of AVL tree and B-Tree and Red and Black Tree?
+What are the usage of each of them?
+Application those used each one of those.
+
+In search trees like binary search tree, AVL Tree, Red-Black tree, etc., every node contains only one value (key) and a maximum of two children. 
+But there is a special type of search tree called B-Tree in which a node contains more than one value (key) and more than two children.
+
+B-Tree of Order m has the following properties...
+
+Property #1 - All leaf nodes must be at same level.
+Property #2 - All nodes except root must have at least [m/2]-1 keys and maximum of m-1 keys.
+Property #3 - All non leaf nodes except root (i.e. all internal nodes) must have at least m/2 children.
+Property #4 - If the root node is a non leaf node, then it must have atleast 2 children.
+Property #5 - A non leaf node with n-1 keys must have n number of children.
+Property #6 - All the key values in a node must be in Ascending Order.
+
+
+Use in
+-------
+Databse: Oracle
+File System : NTFS
+
+
+***
+Threaded Binary Tree
+
+Tree: Main points
+=================
+Tree definition
+Tree traversing
+	Practice with Recursion and Iteration
+	Recursion is simpple but overhead of function caalling.
+	In Recursion Stack memory required more for more data.
+	***Imp:Postorder traversal with Iteration method.
+		Ref : http://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/
+	
+Operations on Tree(Insert,Delete,Search)
+Different Approches
+Different Applications
+
+Huffman coding Greedy Algo:
+---------------------------
+-Huffman coding is based on the frequency of occurance of a data item (pixel in images). 
+The principle is to use a lower number of bits to encode the data that occurs more frequently.
+-Huffman coding is a lossless data compression algorithm. The idea is to assign variable-legth codes to input characters, 
+lengths of the assigned codes are based on the frequencies of corresponding characters. 
+The most frequent character gets the smallest code and the least frequent character gets the largest code.
+
+Ref: http://www.geeksforgeeks.org/greedy-algorithms-set-3-huffman-coding/
+
+There are mainly two major parts in Huffman Coding
+1) Build a Huffman Tree from input characters.
+2) Traverse the Huffman Tree and assign codes to characters.
+
+Example Problem need to solve
+=============================
+Binary Tree
+Traversing in Binary Tree : Inorder, Preorder, Postorder
+Using Iteration and Recursion
+
+Marker at a level? / Level Traversal?
+	http://www.geeksforgeeks.org/given-binary-tree-print-nodes-two-given-level-numbers/
+Print sum of nodes at each level.
+Print '\n' at each level.
+Print the level wise data in reverse order.
+Size of Tree(no. of node in tree)?
+Heilght of tree?
+	1. Do Level traversing and then add each level: Total number of level will be the height of tree.
+	2. Traverse recursively and get height of left and right tree,
+		then comapre left/right and then add 1 into greteer among the both.
+Find element in tree?
+Find max/min element in tree?
+Find number of leaf nodes in tree?
+Find number of full nodes in tree?
+Find the deepest node in the tree?
+
+------------------------------------------------------------------------------
+Least comman ancestor?
+	http://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
+int FindLCA(node* rt, int n1, int n2)
+{
+	if(!rt) return;
+	
+	vector<int> path1, path2;
+	
+	if( !FindPath(rt,path1,n1) || !FindPath(rt,path2,n2))
+		return -1;
+		
+	int i;
+	for(i=0; i<path1.size() && i<path2.size(); i++)
+	{
+		if(path1[i] != path2[i])
+			break;
+	}
+	return path1[i-1];
+}
+
+bool FindPath(node* rt, vector<int> path, int n)
+{
+	if(!rt) return;
+	path.push_back(rt->value);
+	
+	if(rt->value == n)
+		return true;
+	
+	if(rt->left && FindPath(rt->left,path,n) ||
+	   rt->right && FindPath(rt->right,path,n))
+		return true;
+	
+	path.pop_back();
+	return false;
+}
+
+Find all the ancestor of the node?
+	http://www.geeksforgeeks.org/print-ancestors-of-a-given-node-in-binary-tree/
+	http://www.geeksforgeeks.org/print-ancestors-of-a-given-binary-tree-node-without-recursion/
+Check if two nodes are cousins in a Binary Tree
+	http://www.geeksforgeeks.org/check-two-nodes-cousins-binary-tree/
+bool isCousin(node* rt, node* n1, node* n2)
+	{
+		if(!rt) return 0;
+		
+		if(level(rt,n1,1) == level(rt,n2,1) && !isSubling(rt,n1,n2))
+			return true;
+		return false;
+	}
+	
+int	level(node* rt, node* n, int lev)
+	{
+		if(!rt) return 0;
+		if(rt == n) return lev;
+		
+		int l = level(rt->left,n,lev+1);
+		if(l != 0) retun l;
+		
+		return level(rt->right,n,lev+1);
+	}
+	
+bool isSubling(node* rt, node*n1, node* n2)
+{
+	if(!rt) return false;
+	
+	if((rt->left == n1 && rt->right == n2) ||
+		(rt->left == n2 && rt->right == n1) ||
+		isSibling(rt->left, n1,n2) ||
+		isSibling(rt->right,n1,n2))
+		return true;
+	else
+		return false;
+}	
+	
+Vertical sum of given binary tree:
+verticalSum(node* rt)
+{
+	if(!rt) return;
+	
+	int l=0, r=0;
+	node* temp = rt;
+	
+	while(temp->left)
+		{
+			--l;
+			temp = temp->left;
+		}
+	temp = rt;
+	while(temp->right)
+		{
+			++r;
+			temp = temp->right;
+		}
+	int i;
+	for(i=l; i<=r; i++)
+	{
+		cout<<i-l+1<<;
+		verticalLine(0,i,rt);
+	}
+}	
+
+verticalLine(int base, int hd, node* rt)
+{
+	if(!rt) return;
+	
+	verticalLine(base-1, hd, rt->left);
+	if(base==hd) cout<<rt->value;
+	verticalLine(base+1, hd, rt->right);
+}	
+------------------------X---------------------------	
+Compare two trees are identical or not?
+Mirror Tree?
+-------------------------------------------------------------------------------
+
+Print all root leave paths.
+	void printPath(node* root, int path[], int pathlen)
+	{
+		path[pathlen] = root->value;
+		pathlen++;
+
+		if (root->Lchild == NULL && root->Rchild == NULL )
+		{
+			cout << endl;
+			print(path, pathlen);
+			return;
+		}
+		//path[pathlen] = root->value;
+		else
+		{
+			if (root->Lchild != NULL)
+				printPath(root->Lchild, path, pathlen);
+			if (root->Rchild != NULL)
+				printPath(root->Rchild, path, pathlen);
+		}
+	}
+
+	
+BST-------------------------------------------------
+Create, Insert, Delete node In/from BST.
+
+1. BST : Binary Search Tree
+	inorder traversal of BST always produces sorted sequence.
+2. AVL : Balance BST
+	http://www.geeksforgeeks.org/convert-normal-bst-balanced-bst/
+3. Red Black Tree
+	Red-Black Tree is a self-balancing Binary Search Tree (BST) where every node follows following rules.
+	1) Every node has a color either red or black.
+	2) Root of tree is always black.
+	3) There are no two adjacent red nodes (A red node cannot have a red parent or red child).
+	4) Every path from root to a NULL node has same number of black nodes.
+Why Red-Black Trees?
+Most of the BST operations (e.g., search, max, min, insert, delete.. etc) take O(h) time where h is the height of the BST. 
+The cost of these operations may become O(n) for a skewed Binary tree. If we make sure that height of the tree remains O(Logn) 
+after every insertion and deletion, then we can guarantee an upper bound of O(Logn) for all these operations. 
+The height of a Red Black tree is always O(Logn) where n is the number of nodes in the tree.
+
+Comparison with AVL Tree
+The AVL trees are more balanced compared to Red Black Trees, but they may cause more rotations during insertion and deletion. 
+So if your application involves many frequent insertions and deletions, then Red Black trees should be preferred. 
+And if the insertions and deletions are less frequent and search is more frequent operation, then AVL tree should be preferred over Red Black Tree.
+
+
+4. Rotation to balance tree
+-----------------------------------------------------
+
+
+Practice Problem
+================
+0. Diameter of a Binary Tree in O(n) [A new method]
+http://www.geeksforgeeks.org/diameter-of-a-binary-tree-in-on-a-new-method/
+
+/* Function to find height of a tree */
+int height(Node* root, int& ans)
+{
+    if (root == NULL)
+        return 0;
+ 
+    int left_height = height(root->left, ans);
+ 
+    int right_height = height(root->right, ans);
+ 
+    // update the answer, because diameter of a
+    // tree is nothing but maximum value of
+    // (left_height + right_height + 1) for each node
+    ans = max(ans, 1 + left_height + right_height);
+ 
+    return 1 + max(left_height, right_height);
+}
+ 
+/* Computes the diameter of binary tree with given root. */
+int diameter(Node* root)
+{
+    if (root == NULL)
+        return 0;
+    int ans = INT_MIN; // This will store the final answer
+    int height_of_tree = height(root, ans);
+    return ans;
+}
+
+
+	<1>
+		<!-- NOT DONE -->
+		Given a binary tree, print a vertical order traversal of it.
+		Example :
+		Given binary tree:
+		v = vertical line
+			   6
+			/     \
+		    3      7
+		  /  \       \
+		 2    5       9
+		v1 v2 v3  v4  v5	
+
+		returns
+		[
+			[2],  	{v1}
+			[3],	{v2}
+			[6 5],	{v3}
+			[7],	{v4}
+			[9]		{v5}
+		]
+		Note : If 2 Tree Nodes shares the same vertical level then the one with lesser depth will come first.
+	</1>
+
+	<2>
+		<!-- NOT DONE -->
+		Given a binary tree, return the inorder traversal of its nodes’ values.
+		Example :
+		Given binary tree
+
+		   1
+			\
+			 2
+			/
+		   3
+		return [1,3,2].
+		Using recursion is not allowed.
+	</2>
+	
+	<3>
+		<!-- NOT DONE -->
+		Given a binary tree, return the postorder traversal of its nodes’ values.
+		Example :
+		Given binary tree
+
+		   1
+			\
+			 2
+			/
+		   3
+		return [3,2,1].
+		Using recursion is not allowed.
+	</3>
+	
+	<4>
+		<!-- NOT DONE -->
+		Given a binary tree, return the preorder traversal of its nodes’ values.
+		Example :
+		Given binary tree
+
+		   1
+			\
+			 2
+			/
+		   3
+		return [3,2,1].
+		Using recursion is not allowed.
+	</4>
+	
+	<5>
+		<!-- DONE -->
+		ZigZag Level Order Traversal BTBookmark Suggest Edit
+		Given a binary tree, return the zigzag level order traversal of its nodes’ values. 
+		(ie, from left to right, then right to left for the next level and alternate between).
+		Example : 
+		Given binary tree
+
+			3
+		   / \
+		  9  20
+			/  \
+		   15   7
+		return
+		[
+				 [3],
+				 [20, 9],
+				 [15, 7]
+		]
+		
+		Approach:
+		Collect elements level wise and put into vector of vector. Code is in VS.
+		<!--
+		Data Structure:
+		vector<vector<int>> output
+		stack<TreeNode*> curr_layer
+		stack<TreeNode*> next_layer
+		vector<int> output_Layer
+		TreeNode* node;
+		-->
+		
+	</5>
+	
+	<6>
+		Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+		Example :
+		Given the below binary tree and sum = 22,
+					  5
+					 / \
+					4   8
+				   /   / \
+				  11  13  4
+				 /  \      \
+				7    2      1
+		return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
+		Return 0 / 1 ( 0 for false, 1 for true ) for this problem.
+		
+		Approach:
+		Traverse tree using recursion in PreOrder. And when keep total and element till leaf come.
+		Once leafe comes compare total is equal to given sum.
+		<!--
+		Code :
+		if (root != NULL)
+		{
+			sum = sum + root->val;
+			if (root->left == NULL && root->right == NULL)
+			{
+				cout << sum << endl;
+				if(GivenSum == sum)
+					return true;
+				sum = 0;
+			}
+			sumNodesInPath(root->left, sum);
+			sumNodesInPath(root->right, sum);	
+		}
+		return false;
+		-->
+	</6>
+	<7>
+		Root to Leaf Paths With Sum
+
+		Given a binary tree and a sum, find all root-to-leaf paths where each path’s sum equals the given sum.
+		For example:	
+		Given the below binary tree and sum = 22,
+
+					  5
+					 / \
+					4   8
+				   /   / \
+				  11  13  4
+				 /  \    / \
+				7    2  5   1
+		return
+		[
+		   [5,4,11,2],
+		   [5,8,4,5]
+		]
+		
+		Approach:
+			Same as above.
+	</7>
+	
+	<8>
+		Max Depth of Binary TreeBookmark Suggest Edit
+
+		Given a binary tree, find its maximum depth.
+		The maximum depth of a binary tree is the number of nodes along the longest path from the root node down to the farthest leaf node.
+		 NOTE : The path has to end on a leaf node. 
+		Example :
+
+				 1
+				/
+			   2
+		max depth = 2.
+		
+		Approach:
+			Same as above.
+	</8>
+	
+	<9>
+		Min Depth of Binary TreeBookmark Suggest Edit
+	
+		Given a binary tree, find its minimum depth.
+		The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+		NOTE : The path has to end on a leaf node. 
+		Example :
+				 1
+				/
+			   2
+		min depth = 2.
+	</9>
+	
+	<10>
+		Sum Root to Leaf Numbers
+		
+		Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+		An example is the root-to-leaf path 1->2->3 which represents the number 123.
+		Find the total sum of all root-to-leaf numbers % 1003.
+		Example :
+
+			1
+		   / \
+		  2   3
+		The root-to-leaf path 1->2 represents the number 12.
+		The root-to-leaf path 1->3 represents the number 13.
+		Return the sum = (12 + 13) % 1003 = 25 % 1003 = 25.
+	</10>
+	
+	<11>
+		Given a binary tree, determine if it is height-balanced.
+
+		Height-balanced binary tree : is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1. 
+		Return 0 / 1 ( 0 for false, 1 for true ) for this problem
+		Example :
+
+		Input : 
+			  1
+			 / \
+			2   3
+		Return : True or 1 
+		Input 2 : 
+			 3
+			/
+		   2
+		  /
+		 1
+		Return : False or 0 
+			 Because for the root node, left subtree has depth 2 and right subtree has depth 0. 
+			 Difference = 2 > 1.
+		
+		Code:
+		<!--
+		bool isBalanced(TreeNode *root) 
+		{
+			if (root == NULL) return true;
+			return isBalancedWithDepth(root).second;
+		}
+
+		pair<int, bool> isBalancedWithDepth(TreeNode *root) 
+		{
+			if (root == NULL) return make_pair(0, true);
+			pair<int, bool> left = isBalancedWithDepth(root->left);
+			pair<int, bool> right = isBalancedWithDepth(root->right);
+			int depth = max(right.first, left.first) + 1;
+			// The subtree is balanced if right subtree is balanced, left subtree is balanced 
+			// and the depth difference is less than 1. 
+			bool isbalanced = right.second && left.second && (abs(right.first - left.first) < 2);
+			return make_pair(depth, isbalanced);
+		}
+		-->
+	</11>
+	
+	<12>
+		Identical Binary TreesBookmark Suggest Edit
+
+		Given two binary trees, write a function to check if they are equal or not.
+		Two binary trees are considered equal if they are structurally identical and the nodes have the same value.
+		Return 0 / 1 ( 0 for false, 1 for true ) for this problem
+		Example :
+
+		Input : 
+
+		1       1
+		/ \     / \
+		2   3   2   3
+
+		Output : 
+		1 or True
+		
+		Approach:
+		<!--
+		bool compareTwoTree(TreeNode* root1, TreeNode* root2)
+		{
+			if (root1 == NULL && root2 == NULL)
+			{
+				return true;
+			}
+
+			if (root1 == NULL || root2 == NULL)
+			{
+				return true;
+			}
+
+			return (root1->val == root2->val) && (compareTwoTree(root1->left, root2->left)) && (compareTwoTree(root1->right, root2->right));
+		}
+		-->
+	</12>
+	
+	<13>
+		Invert the Binary Tree
+
+		Given a binary tree, invert the binary tree and return it. 
+		Look at the example for more details.
+
+		Example : 
+		Given binary tree
+
+			 1
+		   /   \
+		  2     3
+		 / \   / \
+		4   5 6   7
+		invert and return
+
+			 1
+		   /   \
+		  3     2
+		 / \   / \
+		7   6 5   4
+		
+		Approach:
+		<!--
+			TreeNode* invertTree(TreeNode *root) 
+			{
+				if (!root) return root;
+				root->left = invertTree(root->left);
+				root->right = invertTree(root->right);
+				TreeNode *temp = root->left;
+				root->left = root->right;
+				root->right = temp;
+				return root;
+			}
+		-->
+	</13>
+	
+	<14>
+		Kth Smallest Element In Tree
+		
+		Given a binary search tree, write a function to find the kth smallest element in the tree.
+		Example :
+		Input : 
+		  2
+		 / \
+		1   3
+
+		and k = 2
+		Return : 2
+		As 2 is the second smallest element in the tree.
+		
+		Approach:
+			As given tree is a binary search tree that means all elementrs in left sub-tree is smaller than root.
+			If there are less than k elements ar lest sub-tree then only we need to look into right side of the tree.
+	</14>
