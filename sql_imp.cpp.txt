@@ -1,0 +1,682 @@
+
+In Oracle when dropping a table
+Dropped:
+All table indexes and domain indexes are dropped
+Any triggers defined on the table are dropped
+if table is partitioned, any corresponding local index partitions are dropped
+Mainly - Index and triggers dropped off.
+
+Not dropped:
+if the table is a base table for a view or if it is referenced in a stored procedure, function, or package, 
+then these dependent objects are invalidated but not dropped
+
+
+SQL
+================================
+DQL: Data Query lang		
+	 select
+DDL: Data definition lang
+    create, alter, drop
+DML: Data Manipulation lang
+	insert, delete, update
+DCL: Data Control lang
+	 grant, revoke
+TCL – Transaction Control: statements used to manage the changes made by DML statements. It allows statements to be grouped together into logical transactions.
+
+	COMMIT – save work done
+	SAVEPOINT – identify a point in a transaction to which you can later roll back
+	ROLLBACK – restore database to original since the last COMMIT
+	SET TRANSACTION – Change transaction options like isolation level and what rollback segment to use
+			
+For revoking the transactions and to make the data commit to the database we use TCL. 
+Once we commit we cannot rollback. Once we rollback we cannot commit.
+Commit and Rollback are generally used to commit or revoke the transactions that are with regard to DML commands.
+
+================================
+DDL command are auto commited.
+-> 	Precommit
+		Actual Run DDL commnad
+->	Postcommit
+
+
+one thing here that its not always that just executing DDL will commit all the previous transactions. 
+
+Below is the process that oracle actually follow for a DDL:-
+
+1) Parsing of the DDL statement
+2) Commit
+3) Execute the DDL
+4) Commit
+
+Hence a DDL commits previous transaction only if parsing of DDL statement goes successful. 
+
+e.g. DROP TABLE XYZ; --(This statement will be parsed successfully even if table XYZ does not exist bcoz its syntactically correct hence will commit the previous transactions)
+
+but DDL like 
+
+CREATE TABLE ABC
+(
+A NUMBER
+B NUMBER
+); 
+
+will not be parsed successfully (Since comma is missing before B) and hence wont commit the previous transaction. 
+
+————————————————————————————————————————————————————————————————————————————————————————————————-————————————————————————————————-————————————————————————————————-
+
+Select * from table1 
+where
+group by
+having
+order by
+===========================
+order by asc/desc
+
+select * from table1;
+
+create table table_1( rollNo integer(3), name varchar(15), age integer(2), marks integer(3));
+
+Add column:
+alter table table_1 add address varchar(20);
+Modify column:
+	alter table table_1 modify add varchar(20);
+	alter table table_1 modify gender default 'M';
+Rename column:
+	alter table table_1 rename column Address to add;
+Delete column
+	alter table table_1 drop column add;
+
+drop table table_1; 
+drop index INDEX_NAME;
+drop database DATABASE_NAME
+drop view VIEW_NAME
+
+=============Delete---------Truncate---------Drop====================
+Delete:
+DML command, to delete rows from table
+Can commit and rollback
+DML trigger will fire, slower than truncate.
+
+Truncate:
+DDL command
+To delete rows from table permanently.
+can not commit or rollback
+No DML trigger will fire,It is faster than delete
+
+Drop:
+DDL command
+To delete/drop Table.
+can rollback by using flashback command. i.e. flashback table Table1 to before drop
+===================================================================================
+######################### DML ######################### (Auto committed)
+insert into table_1 values(1, "Akash" 27, 72, "Pune");
+insert into table_1 (rollNo, name, age) (2, "PK" , 25);
+
+update table_1 set age=26 rollNo=2;
+
+
+delete from table_1;
+delete from table_1 where rollNo = 2;
+=========================================================
+on delete set null;
+on delete cascade;
+on update cascade;
+=========================================================
+commit;
+rollback;
+savepoint xxx;
+rollback xxx;		{lock automatically handled in DML commands}
+
+recyclebin purged:  purge recyclebin;
+flashback table table_2 to before drop
+===========================================
+#####################Constraints#####################
+Primary key
+Foreign key
+Check
+Not Null
+Unique
+
+Foreign key:
+create table Table1
+(
+---	
+FOREIGN KEY(patient_id) REFERENCES patient(patient_id) ON UPDATE CASCADE ON DELETE    
+CASCADE,
+---
+);
+
+Candidate key:
+	A candidate key is any key that could be used as the primary key.
+	This comes with two requirements: it cannot be null, and its values must be unique.
+Composite key:
+	A composite key contains more than one column.
+
+To update Primary key
+-----------------------
+You shouldn't really do this but insert in a new record instead and update it that way.
+But, if you really need to, you can do the following:
+
+Disable enforcing FK constraints temporarily (e.g. ALTER  TABLE foo WITH NOCHECK CONSTRAINT ALL)
+Then update your PK
+Then update your FKs to match the PK change
+Finally enable back enforcing FK constraints
+
+create table Emp(Id integer(2) constraint c_empID Primary key, Name varchar(15));
+Add Constraint:
+	alter table Emp add Primary Key(Id);
+	OR
+	alter table Emp add constraint c_empID Primary Key(Id);
+Drop Constraint:
+	alter table Emp drop constraint c_empID;
+	OR
+	alter table Emp drop constraints Id;
+=============================================================
+#############################Group Functions############################
+Min, Max, Sum, Avg, Count
+e.g. select count(*) from Emp;
+
+e.g. 
+Display the total sal for each dept
+select DeptNo, sum(sal) as Total_sal from Emp
+group by(DeptNo);
+==============================================================
+
+=========================SET OPERATORS========================
+Union			: club excluding duplicate
+Union All		: club all including duplicates
+Minus			: return uncommon
+Intersect		: return common
+==============================================================
+
+like , not like , in , not in, between and
+
+Select emp name from emp table which has 's' in their name.
+-> select * from emp where Ename like %s%
+
+Select name of emp who are not working in dept 10 and 20.
+-> select * from EMP where deptNo not in(10,20);
+
+select employees from emp table who dont get any commission
+-> select * from EMP where commission =0 or commission is NULL. 
+
+select all employees from EMP who are hired during year 1983.
+-> select * from EMP where hireDate between 1-jan-1983 and 31-dec-1983;
+===============================================================================
+
+View:
+	A view is nothing more than a SQL statement that is stored in the database with an associated name.
+	A view is actually a composition of a table in the form of a predefined SQL query.
+CREATE VIEW view_name AS SELECT column_name(s) FROM table_name WHERE condition;
+create or replace
+e.g
+CREATE VIEW CUSTOMERS_VIEW AS SELECT name, age FROM  CUSTOMERS;
+
+So view store in memory like: Name = select query in compiled form.
+e.g. CUSTOMERS_VIEW = SELECT name, age FROM  CUSTOMERS
+
+We can query to the view once it created same as we query to normal Table
+
+With CHECK option:??????????????????
+	The WITH CHECK OPTION is a CREATE VIEW statement option. The purpose of the WITH CHECK OPTION is to ensure 
+	that all UPDATE and INSERTs satisfy the condition(s) in the view definition.
+	If they do not satisfy the condition(s), the UPDATE or INSERT returns an error.
+e.g.
+CREATE VIEW CUSTOMERS_VIEW AS
+SELECT name, age
+FROM  CUSTOMERS
+WHERE age IS NOT NULL
+WITH CHECK OPTION;
+
+Update VIEW:
+	A view can be updated under certain conditions.
+	And if view update its base class automatically update.
+
+Insert rows into VIEW
+	Same as Update view.
+
+Delete rows from VIEW
+	Same as Update and Insert view.
+
+GRANT on view:
+grant insert on Table_NAME to USER_NAME
+
+***Table drop then view not drop automatically***
+If the table is a base table for a view, a container or master table of a materialized view, 
+or if it is referenced in a stored procedure, function, or package, 
+then the database invalidates these dependent objects but does not drop them. You cannot use these objects 
+unless you re-create the table or drop and re-create the objects so that they no longer depend on the table.	
+	
+What is a materialized view?……………………….????????????????
+Materialized views are also a view but are disk based. Materialized views get updates on specific duration,
+base upon the interval specified in the query definition. We can index materialized view.
+
+Advantages:
+1. Views don't store data in a physical location.
+2. The view can be used to hide some of the columns from the table.
+3. Views can provide Access Restriction, since data insertion, update and deletion is not possible with the view.
+
+Disadvantages:
+1. When a table is dropped, associated view become irrelevant.
+2. Since the view is created when a query requesting data from view is triggered, its a bit slow.
+3. When views are created for large tables, it occupies more memory.
+	
+--------------------------------------------------------------------------------------------------------------------
+Not Done--------
+4.	Procedure
+5.	Trigger
+6.	Sequence
+CREATE SEQUENCE seq_person MINVALUE 1 START WITH 1 INCREMENT BY 1 CACHE 10;
+use:
+INSERT INTO Persons (ID,FirstName,LastName) VALUES (seq_person.nextval,'Lars','Monsen');
+==============================================================================================
+
+Index:
+	An index is an optional structure, associated with a table or table cluster, that can sometimes speed data access.
+	Indexes are schema objects that are logically and physically independent of the data
+	in the objects with which they are associated.
+	Thus, an index can be dropped or created without physically affecting the table for the index.
+	The database automatically maintains and uses indexes after they are created.
+	
+	1. Composite Index
+	2. Unique Index
+	3. Non Unique Index
+	
+		create index INDEX_NAME on TABLE_NAME (COLUMN_NAME,COLUMN_NAME);
+		* UNIQUE Index
+		   Same as normal index but duplicate values not allowed in this Index.
+		* Types:
+			B-tree Index (balance tree)
+				This type of Index is implemented by B-tree data structure.
+				
+				Branch block : for searching
+				Leaf block : stores data
+				Index scan
+				Full Index scan
+				Fast full Index scan
+				Index unique scan
+				
+			Subtypes:
+			Index-Organized Table
+			Reverse key indexes
+			Descending indexes
+			B-tree cluster indexes
+			
+			BitMap Index
+				This type of Index is implemented by 2-D Array.
+				Its good when Cardinality of column is low.
+				Its good column cardinality is 200 max.
+				It mostly use where mostly data is restricted to update and only read operation is allow.
+				e.g. warehouse
+		e.g. Suppose there is a column name "Direction" having values : North,South,East,West.
+		That means cardinality is very low.
+		If we create bitmap index on above column "Direction" then 2-D is looks like below:		
+		
+			 R1	 |R2  |R3  |R4	|R5  |... |Rn  |		
+			|----	 |----|----|----|----|----|----|---
+		North	| 0	 | 0  |	0  | 1	|    |	  |    |
+		South	| 1	 | 0  | 0  | 0	|    |	  |    |
+		East	| 0	 | 1  | 0  | 0	|    |	  |    |
+		West	| 0	 | 0  | 1  | 0	|    |	  |    |
+		
+Cluster Index:(faster access)
+A clustered index reorders the way records in the table are physically stored. 
+There can be only one clustered index per table. It makes data retrieval faster.
+Records in sorted order
+Only one cluster index per table
+Implemented in B-tree
+e.g. - telephone directory
+Create clustered index index_name on table_1(gender desc, salary asc);
+
+Non-Cluster Index: (faster insert and update)
+A non clustered index does not alter the way it was stored but creates a completely separate object within the table. 
+As a result insert and update command will be faster.
+Not in sorted order
+key is attached to row value
+E.g. - Book index - 2 index at first page and another at last page
+Create NonClustered index index_name on table_1(name);
+
+//Create Non-Clustered index
+create NonClustered index IX_table_name_column_name 
+      on table_name (column_name ASC) 
+
+Good reference:
+https://www.youtube.com/watch?v=NGslt99VOCw
+http://www.sqlservercentral.com/blogs/practicalsqldba/2013/03/14/sql-server-part-4-explaining-the-non-clustered-index-structure-/
+http://docs.oracle.com/cd/E11882_01/server.112/e40540/indexiot.htm#CNCPT1182
+=================================================================================================================
+
+
+Covering index
+
+
+
+
+
+=================================================================================================================
+Trigger:
+	Its just like the stored procedure, store into a database.(different area than database tables)
+	But instead of calling by user, Trigger called automatically by oracle on perticular event occures.
+	
+	Trigger run on DML command run.
+	Types of Trigger:
+	DDL Trigger
+	DML Trigger
+	Logon Trigger
+	Types of DML Trigger:
+	1. After Trigger
+	2. Instead of Trigger
+
+	Event occures means any SQL command execute by user:
+		DML statement
+		DDL statement
+		System event like startup, shutdown, error masssege etc.
+		User event login, logoff
+		
+	Cascading may happen in trigger:
+		like one trigger can cause a even for another event.
+		
+	Part of Trigger:
+		A trigger event or statement: SQL statement
+		A trigger restriction		: Boolean expression must be satisfy to run trigger
+		A trigger Action
+		
+	e.g.
+		CREATE OR REPLACE TRIGGER Print_salary_changes
+		BEFORE DELETE OR INSERT OR UPDATE ON Emp_tab
+		FOR EACH ROW
+		WHEN (new.Empno > 0)
+		DECLARE
+		sal_diff number;
+		BEGIN
+		sal_diff = new.sal - old.sal;
+		dbms_output.put('Old salary' || old.sal);
+		dbms_output.put('New salary' || new.sal);
+		dbms_output.put_line('Difference' || sal_diff);
+		END;
+	
+When table drop, the trigger automatically droped.	
+=================================================================================================================
+
+Stored Procedure:
+	Stored Procedure is a function which contains a collection of SQL Queries.
+	The procedure can take inputs , process them and send back output.
+	Advantages:
+		Stored Procedures are pre complied and stored in the database. 
+		This enables the database to execute the queries much faster. Since many queries can be included in a stored procedure,
+		round trip time to execute multiple queries from source code to database and back is avoided.
+
+e.g.
+DELIMITER $$
+CREATE PROCEDURE my_procedure_User_Variables()
+BEGIN   
+SET @x = 15;       
+SET @y = 10;       
+SELECT @x, @y, @x-@y;   
+END$$
+
+Now execute the procedure :
+mysql> CALL my_procedure_User_Variables();
+
+/* declare local variables */   
+DECLARE a INT DEFAULT 10;   
+DECLARE b, c INT;    /* using the local variables */   
+
+
+
+have to do?
+ranc
+All query using join
+Normal form
+===========================
+
+Database Transaction:-
+take database from one state to other consistent state.
+properties:-
+atomicity - consistency - durability - Isolation
+  
+Lock:- it tells that other using same database
+a. shared Lock - other can read data from database.
+b. Exclusive Lock - other can read/write data from database.
+  
+ 
+* SOME IMP POINTS *
+
+substr( NAME, 0, 3)
+intr( NAME, 'o')
+RTRIM
+e.g. 1. RTRIM('Test   ')		OUTPUT => 'Test'
+	 1. RTRIM('Testxyxy', 'xy')		OUTPUT =>  'Test'
+	 2. RTRIM('Tech6372', '0123456789') OUTPUT =>  'Tech'
+It check individual char from 2nd string and then remove it from 1st string if match found.
+If second string not present then it checks for space char, if found then delete the space char from 1st string.
+
+LTRIM	: "same as RTRIM"
+
+REPLACE(Name, 'a', '$')				
+=> NAME is col name or may be a string.
+	Replace 'a' by '$'
+
+concat two string :	||
+e.g. 'Name' || 'Surname'
+OR
+select concat(Name,'-',Address) from Emp;
+
+Locate('char',Name_colName)
+
+select len(FIRST_NAME) from employee : - to get length
+OR LENGTH() in Oracle
+
+Escape character :
+display name of emp having '%' in last name.
+Select FIRST_NAME from employee where Last_Name like '%\%%'
+
+DATE:
+To get the sys date:	
+sysdate from dual		=>  Here dual is a sys table.
+
+If you want to get the year or month or day from date:
+to_char( DateJoin, 'yyyy' )
+to_char( DateJoin, 'mon' )
+to_char( DateJoin, 'dd' )
+
+To get time with date:
+to_char( DateOfJoining, 'dd/mm/yyyy hh:mi:ss:ff' );		=> ff- millisecond
+
+To mentioned a const date in where condition:
+to_char( 'constDate', 'Its format')
+e.g. to_char( '01/01/2013', 'dd/mm/yyyy')
+
+Write an SQL Query to check whether date passed to Query is date of given format or not.
+> SELECT  ISDATE('1/08/13') AS "MM/DD/YY"; 
+OR Oracle
+SHOW ISDATE('3 5 1995');  : return Yes/No
+
+SQL Case:
+select EmpName, CASE EmpName when 'JOHN' then sal*10
+							 when 'Roy' then sal*15
+							 ELSE sal*20 END
+		from EMPTable
+
+Lower and upper case
+Select all rows from EMP where Name have only digits:
+e.g.	select * from EMP where lower(Name) = upper(Name);
+
+Set Zero to all col SAL which have NULL value
+e.g.	select Name, nvl(SAL, 0) from EMPTable;
+
+Select Top 2 sal from EMP table
+->	select * from (slect * from EMPTable order by Sal desc)
+    where rownum < 3;
+	
+select 2nd highest sal
+->	select min(sal) from (select * from EMPTable order by sal desc)
+    where rownum < 3;
+
+	
+==========================================JOIN==============================================
+Types:
+
+Cross join
+Equi join / Inner join
+Outer join:
+	left outer join
+	right outer join
+	full outer join
+Self join
+Non-Equi join
+
+E.g.
+
+select * from TableA inner join TableB where(0=1);
+->	As above condition i.e. 0=1 is false, no output will come.
+
+select * from TableA left outer join TableB where(0=1);
+->  As above condition i.e. 0=1 is false but it uses left outer join rows from left table(TableA) will get selected.
+
+select * from TableA right outer join TableB where(0=1);
+->  As above condition i.e. 0=1 is false but it uses right outer join rows from right table(TableB) will get selected.
+
+select * from TableA inner join TableB where(1=1);
+->	As above condition i.e. 1=1 is true, but nothing to filter through the condition
+    So Cartesian product happened. i.e. CROSS join.
+
+==========================================================================================
+
+========================================Normalization============================================
+1NF 
+A relation R is in first normal form (1NF) if and only if all underlying domains contain atomic values only
+
+Non key attribute:
+A non key attribute in sql server is a columns which can not be used to 
+identify a record uniquely for example name or age columns in customer table.
+
+2NF
+A relation R is in second normal form (2NF) if and only if it is in 1NF and every non-key attribute
+is fully dependent on the primary key
+Example (2NF but not 3NF):
+SECOND (supplier_no, status, city)
+
+Functional Dependencies:
+supplier_no -> status
+supplier_no -> city
+city -> status
+
+Transitive dependency :
+In Database Management System, a transitive dependency is a functional dependency which holds by virtue of transitivity.
+A transitive dependency can occur only in a relation that has three or more attributes.
+Let A, B, and C designate three distinct attributes (or distinct collections of attributes) in the relation.
+Suppose all three of the following conditions hold:
+A -> B
+It is not the case that B -> A
+B -> C
+Then the functional dependency A -> C (which follows from 1 and 3 by the axiom of transitivity) is a transitive dependency.
+
+3NF
+A relation R is in third normal form (3NF) if and only if it is in 2NF and every non-key attribute
+is non-transitively dependent on the primary key. 
+An attribute C is transitively dependent on attribute A if there exists an attribute B such that
+: A -> B and B -> C. 
+Note that 3NF is concerned with transitive dependencies which do not involve candidate keys.
+A 3NF relation with more than one candidate key will clearly have transitive dependencies of the form:
+primary_key -> other_candidate_key -> any_non-key_column	
+---------------------------------------------------------------------------------------------------------------------------	
+	
+#########################################IMP queries###################################################
+//	1.	To fetch ALTERNATE records from a table. (EVEN NUMBERED)
+//
+//	select * from EMP where rowid in (select decode(mod(rownum,2),0,rowid,null) from EMP);
+//---------------------------------------------------------------------------------------------------------
+//	2.	To fetch ALTERNATE records from a table. (ODD NUMBERED)
+//
+//	select * from EMP where rwoid in (select decode(mod(rownum,2)0,null,rowid) from EMP);
+//---------------------------------------------------------------------------------------------------------
+//	3.	Find the 3rd MAX salary in the emp table.
+//
+//	select distinct sal from EMP e1 where 3=(select count(distinct sal) from EMP e2 where e1.sal<=e2.sal);
+OR
+//	select max(sal) from (select * from EMPTable order by sal desc) where rownum < 4;
+//
+//---------------------------------------------------------------------------------------------------------
+//	4.	Find the 3rd MIN salary in the emp table.
+//
+//	select distinct sal from EMP e1 where 3=(select count(distinct sal) from EMP e2 where e1.sal>=e2.sal);
+//---------------------------------------------------------------------------------------------------------
+//	5.	Select FIRST n records from a table.
+//	
+//	select * from EMP where rownum < = &n;
+//---------------------------------------------------------------------------------------------------------
+//	6. Select LAST n records from a table.
+//
+//	select * from EMP minus select * from emp where rownum <= (select count(*)- &n from EMP);
+//---------------------------------------------------------------------------------------------------------
+//	7. List dept no., Dept name for all the departments in which there are no employees in the department.
+//	
+//	select * from dept where deptno not in (select deptno from emp);  
+//-----------------------------------------------------------------------------------------------------------
+//	8. How to get 3 Max salaries ?
+//	9. How to get 3 Min salaries ?
+//	10.How to get nth max salaries ?
+//	11.Select DISTINCT RECORDS from emp table.
+//
+//	select * from EMP a where rwoid = (select max(rowid) from Emp b where a.empno=b.empno);
+//-----------------------------------------------------------------------------------------------------------
+//	12.How to delete duplicate rows in a table?
+//
+//	delete * from EMP a where rowid != (select max(rowid) from Emp b where a.empno=b.empno);
+//----------------------------------------------------------------------------------------------------
+//	13.Count of number of employees in  department  wise.
+//
+//	select deptno, count(empno) from EMP group by deptno;
+OR
+//	select deptName, deptNo, count(empNo) from Emp a, Dept b where a.deptno(+) = b.deptno group by deptName, b.deptNo;
+OR
+//	select deptName, DeptNo, count(empno) from Emp a right join Dept b on a.deptno = b.deptno group by deptName, b.deptNo; 
+//------------------------------------------------------------------------------------------------------------
+//	14.In emp table add comm+sal as total sal.
+//
+//
+//-------------------------------------------------------------------------------------------------------------
+//	15.Select  any salary <3000 from emp table.
+		https://www.w3schools.com/sql/sql_any_all.asp
+//	16.Select  all salary <3000 from emp table. 
+//	17.How can I create an empty table emp1 with same structure as emp?
+//
+//	Create table emp1 as select * from emp where 1=2;
+//--------------------------------------------------------------------------------------------------------------
+//	18.How to retrive record where sal between 1000 to 2000?
+//
+//	select * from Emp where sal between 1000 to 2000;
+//-------------------------------------------------------------------------------------------------------------
+//	19.Select all records where dept no of both emp and dept table matches.
+//
+//	20.Count the total sal deptno wise where more than 2 employees exist.
+
+	SELECT sum(Sal), deptno
+	FROM Emp
+	GROUP BY deptno
+	HAVING COUNT(EmpID) > 2;
+//
+//---------------------------------------------------------------------------------------------------------
+http://www.bullraider.com/database/sql-tutorial/7-complex-queries-in-sql
+//---------------------------------------------------------------------------------------------------------
+1. Select employee details from employee table if data exists in incentive table ?
+> select * from EMP where exists( select * from Incentives );
+
+
+
+===========================================================================================================
+Any
+All
+ 
+ 
+http://a4academics.com/interview-questions/53-database-and-sql/397-top-100-database-sql-interview-questions-and-answers-examples-queries?showall=1&limitstart=
+ 
+http://www.programmerinterview.com/index.php/database-sql/practice-interview-question-2/ 
+ 
+=============================================================================
+
+Que:
+1. Can composite primary column have NULL value ?
+ No
+ 
