@@ -1,0 +1,117 @@
+Questions
+
+Networking issues/troubleshooting related questions?
+what can be possible causes if your URL is not working and how will you fix those.
+
+Two link list cross each other and after crossing point rest part is same for both lists.
+Find out the crossing point.
+Sol: Find out the length of both list then set the pointer of bigger list same as the smaller list
+Then traverse both list in same loop and check both ptr are same.
+
+
+
+Dhruva
+Problem1: Find out number of palindrome in to given string.
+Problem2: Find out the triplet of Pythagorus in given array of integers.
+
+Persistent
+Infinite for loop: program
+Infinite recursion call: program will hang- stack overflow
+Ans:
+	Whenever you call a function, the arguments are pushed on the stack, which means that data on the stack segment is "allocated". When the function is called, the return address is also pushed on the stack, by the CPU, so it knows where to return to.
+In your example case this means, that no arguments are used, so the only thing that is pushed is the return address, which is rather small (4 bytes on x86-32 architexture), and additionally the stackframe is adjusted which takes another four bytes on this architecture.
+From this is follows that, once the stack segment is exhausted, the function can not be called aynmore and an exception is raised to the OS. Now there can happen two things. Either the OS forwards the exception back to your application which you will see as stack overflow. Or the OS can try to allocate additional space for the stack segemnt, up to a defined limit, after which the application will see the stack overflow.
+So this code (I renamed it to infinite_recursion() as main() can not be called) ...
+int inifinite_recursion(void)
+{
+    inifinite_recursion();
+    return 0;
+}
+... looks like this:
+_inifinite_recursion:
+    push    ebp                    ; 4 bytes on the stack
+    mov ebp, esp
+
+    call    _inifinite_recursion   ; another 4 bytes on the stack
+    mov eax, 0                 ; this will never be executed.
+
+    pop ebp
+    ret 
+
+NULL pointer/Dangling pointer
+After freeing when not assigned to NULL it still points to same memory address, such pointer are dangling pointer. null pointer - A Pointer that does not refer to any address of a avlue but NULL, is known as NULL pointer
+
+Can we declare destructor in private?
+	No.
+	It will give compile time error.
+
+If call delete() in destructor then what happened?
+	It cause to the infinite recursion call.
+
+What is container class and type of container class?
+	A container is a holder object that stores a collection of other objects (its elements). They are implemented as class templates, which allows a great flexibility in the types supported as elements.
+	STL classes.
+
+Grab
+quick sort
+String Problem: Find index of substring
+REST API, run/work on which protocol
+No SQL and SQL difference
+Static member and static function where to use ?
+
+Teradata
+Uber system design
+
+Centum
+SPOKE server
+Difference between typename and classname?
+
+RTTI - Run-time type Information
+In C++, RTTI (Run-time type information) is a mechanism that exposes information about an object’s data type at runtime and is available only for the classes which have at least one virtual function. 
+It allows the type of an object to be determined during program execution
+For example, dynamic_cast uses RTTI and following program fails with error “cannot dynamic_cast `b’ (of type `class B*’) to type `class D*’ (source type is not polymorphic) ” because there is no virtual function in the base class B.
+
+SOLID design principle?
+
+Single responsibility principle
+	A class should have one and only one reason to change, meaning that a class should only have one job.
+Open-closed Principle
+	Objects or entities should be open for extension, but closed for modification.
+Liskov substitution principle
+	subclass should override the parent class methods in a way that does not break functionality from a client’s point of view.
+Interface segregation principle
+	A client should never be forced to implement an interface that it doesn’t use or clients shouldn’t be forced to depend on methods they do not use.
+Dependency inversion principle
+	Entities must depend on abstractions not on concretions. It states that the high level module must not depend on the low level module, but they should depend on abstractions.
+
+Openwave Mobility:
+1. How gdb works?
+2. If server crash, how debug it.
+	/var/log/syslog is a good place to start.
+	/var/log
+
+1. What is system calls? How they works? Why those are needed?
+2. Smart pointers
+3. How write cross platform code? What all things to take care?
+4. String functions? What difference between strlen / strnlen / s_strlen() 
+5. What is distributed software?
+6. How the deployment happened
+
+Druva
+Find the pythagorus triplet in given array of integer.
+Find all palindrome substring in given string.
+
+
+Other:
+//int Arr[3][4];
+int** ptr = new int*[3];
+    for(int i=0; i<4; i++)
+        ptr[i] = new int();
+        
+    for(int i=0; i<4; i++)
+        delete[] ptr[i];
+        
+    delete[] ptr;
+
+
+
