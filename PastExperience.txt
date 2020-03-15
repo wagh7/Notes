@@ -1,0 +1,176 @@
+Past experience
+
+Code coverage Tools:
+Bullseye Coverage
+Enterprise Visual studio
+
+How to add DLL in project in Visual studio:
+Right click on project -> Properties - > Configuration Properties -> Select Linker -> General -> Additional Library Directory
+
+How to monitor memory usage of the program?
+VS->Debug->performance profiler
+
+
+QT
+QObject is a parent class of all classes in QT.
+Qmutext 
+QSimaphore
+
+QMutextLocker
+QMutexLocker should be created within a function where a QMutex needs to be locked. The mutex is locked when QMutexLocker is created. You can unlock and relock the mutex with unlock() and relock(). If locked, the mutex will be unlocked when the QMutexLocker is destroyed.
+ 
+class Foo {
+  QMutex dataMutex;
+  QVector<int> data;
+public:
+  /// Thread-safe
+  void modify()
+ {
+    QMutexLocker lock(&dataMutex);	// lock automatically 
+    QVector<int> copy = data;
+    lock.unlock();		// unlock
+
+    copy << 42;
+
+    lock.relock();		// relock
+    data = copy;
+  }					// unlock automatically
+};
+
+UML diagram
+Flow diagram
+Use-case diagram
+Class diagram
+Sequence diagram
+
+V & V plan
+Verification: are we building product right?
+Validation: are we building right product?
+
+Unit testing: cpp unit Junit 
+Visual Studio includes these C++ test frameworks with no additional downloads required:
+* Microsoft Unit Testing Framework for C++
+* Google Test
+* Boost.Test
+* CTest
+
+Visual C++ unit test
+E.g.
+TEST_METHOD(TestClassInit)
+{
+    std::string name = "Bill";
+    MyClass mc(name);
+    Assert::AreEqual(name, mc.GetName());
+}
+
+void assert (int expression);
+Evaluate assertion
+If the argument expression of this macro with functional form compares equal to zero (i.e., the expression is false), a message is written to the standard error device and abort is called, terminating the program execution.
+
+#define NDEBUG     	// When declare this macro then it disable the assert statement
+#include <assert.h>
+
+Google Test
+#include <gtest/gtest.h>
+
+Use EXPECT_ when you
+* want to report more than one failure in your test
+Use ASSERT_ when
+* it doesn't make sense to continue when the assertion fails
+
+Assert_true(a==b);  // if condition false then Fail
+Assert_EQ(a,b);
+Expect_EQ(a,b);
+Expect_true(a==b)
+
+e.g.
+TEST_F(FileLockTests, FileLockTest) {
+	// Function signature: FileLock(FILE *fp);
+
+	int err = 0;
+	err = fopen_s(&fp, filename, "w");
+	ASSERT_TRUE(err == 0 && fp != NULL) << "errno = " << errno;
+	if(object != NULL)
+	{
+		delete object;
+		fclose(fp);
+		object=NULL;
+	}
+	EXPECT_TRUE(object==NULL);
+}
+
+
+"If you have a broken test that you cannot fix right away, you can add the DISABLED_ prefix to its name. This will exclude it from execution."
+E.g.
+DISABLED_BarTest : public ::testing::Test { ... }
+
+Other Except functions:
+https://github.com/google/googletest/blob/master/googlemock/docs/CheatSheet.md
+https://github.com/google/googletest/blob/master/googletest/docs/primer.md
+
+
+TES(TestSuitName, TestName)
+{
+
+}
+
+TEST_F
+If you find yourself writing two or more tests that operate on similar data, you can use a test fixture. It allows you to reuse the same configuration of objects for several different tests.
+e.g.
+TEST_F(TestFixtureClassName, TestName)
+Like TEST(), the first argument is the test case name, but for TEST_F() this must be the name of the test fixture class. You've probably guessed: _F is for fixture.
+Also, you must first define a test fixture class before using it in a TEST_F(), or you'll get the compiler error "virtual outside class declaration".
+
+To create a fixture:
+1. Derive a class from ::testing::Test . Start its body with protected: as we'll want to access fixture members from sub-classes.
+2. Inside the class, declare any objects you plan to use.
+3. If necessary, write a default constructor or SetUp() function to prepare the objects for each test. A common mistake is to spell SetUp() as Setup() with a small u - Use override in C++11 to make sure you spelled it correctly
+4. If necessary, write a destructor or TearDown() function to release any resources you allocated in SetUp() . To learn when you should use the constructor/destructor and when you should use SetUp()/TearDown(), read this FAQentry.
+5. If needed, define subroutines for your tests to share.
+
+
+class QueueTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+     q1_.Enqueue(1);
+     q2_.Enqueue(2);
+     q2_.Enqueue(3);
+  }
+
+  // void TearDown() override {}
+
+  Queue<int> q0_;
+  Queue<int> q1_;
+  Queue<int> q2_;
+};
+
+//Test 1
+TEST_F(QueueTest, IsEmptyInitially) {
+  EXPECT_EQ(q0_.size(), 0);
+}
+
+//Test 2
+TEST_F(QueueTest, DequeueWorks) {
+  int* n = q0_.Dequeue();
+  EXPECT_EQ(n, nullptr);
+
+  n = q1_.Dequeue();
+  ASSERT_NE(n, nullptr);
+  EXPECT_EQ(*n, 1);
+  EXPECT_EQ(q1_.size(), 0);
+  delete n;
+
+  n = q2_.Dequeue();
+  ASSERT_NE(n, nullptr);
+  EXPECT_EQ(*n, 2);
+  EXPECT_EQ(q2_.size(), 1);
+  delete n;
+}
+
+googletest assertions are macros that resemble function calls. You test a class or function by making assertions about its behavior. When an assertion fails, googletest prints the assertion's source file and line number location, along with a failure message. You may also supply a custom failure message which will be appended to googletest's message.
+EXPECT_EQ(x[i], y[i]) << "Vectors x and y differ at index " << i;
+
+
+
+
+
