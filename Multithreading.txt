@@ -1,0 +1,401 @@
+Multi-Threading
+
+Asynchronous process:
+In computer programs, asynchronous operation means that a process operates independently of other processes.
+Synchronous process:
+whereas synchronous operation means that the process runs only as a result of some other process being completed or handing off operation.
+
+Race Condition:
+	When multiple threads trying to access/Modify the shared data at the same time and it cause to the undefined/unwanted behavior.
+
+How communicate multiple threads in multi-core environment?
+Shared cash.
+
+When use multi-threads and when use multi-process? 
+If you decide to go with threads you will restrict your app to be run on a single machine. This solution doesn't scale (or scales to some extent) - there are always hardware limits.
+And different processes communicating via sockets can be distributed between machines, so that you could add virtually unlimited number or them. This scales better at the cost of slow communication between processes.
+
+
+#include <iostream>
+#include <conio.h>
+#include <thread> // needed for thread
+#include <future>	// future and promise
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
+
+using namespace std;
+
+Class foo
+{
+	public:
+		void f3()
+		{}
+};
+Void f1(int a)
+{}
+void f2(int &a)
+{}
+
+//Constructor of thread
+int n = 0;
+    foo f;
+    std::thread t1; // t1 is not a thread
+    std::thread t2(f1, n + 1); // pass by value
+    std::thread t3(f2, std::ref(n)); // pass by reference
+    std::thread t4(std::move(t3)); // t4 is now running f2(). t3 is no longer a thread
+    std::thread t5(&foo::bar, &obj); // t5 runs foo::bar() on object f
+
+
+// calculate factorial
+void factorial(int no)
+{
+	int res=1;
+	for(int i=no; i>0; i—)
+		res *= i;
+}
+
+int main()
+{
+	thread t1{factorial, 4};
+	// do something
+	t1.join();
+	return 1;
+}
+
+// to get thread id
+std::this_thread::get_id() 
+OR
+t1.get_id();
+
+// to wait for thread to complete
+t1.join();
+
+// to sleep thread
+this_thread::sleep_for(chrono::milliseconds(100));
+
+// pass STL object to thread function
+vector<int> v;
+thread t1{fun, v}
+// thread t1{fun, {1,2,3}}implicit conversion not possible
+
+// prototype of thread function as normal function
+void fun(vector<int> v)
+
+The difference
+One of the differences between std::lock_guard and std::unique_lock is that the programmer is able to unlock std::unique_lock, but she/he is not able to unlock std::lock_guard. Let’s explain it in more detail.
+std::lock_guard
+If you have an object of std::lock_guard-
+std::lock_guard<mutex> guard1(m);
+then the constructor of guard1 locks the mutex. At the end of guard1’s life, the destructor unlocks the mutex. There is no other possibility. In fact, the std::lock_guard class doesn’t have any other member function.
+std::unique_lock
+On the other hand, we have an object of std::unique_lock.
+std::unique_lock<mutex> guard2(m);
+There are similarities with std::lock_guard class. The constructor of guard2 also locks the mutex and the destructor of guard2 also unlocks the mutex. But the std::unique_lock has additional functionalities.
+The programmer is able to unlock the mutex with the help of the guard object
+guard2.unlock();
+This means that the programmer can unlock the mutex before the guard2’s life ends. After the mutex was unlocked, the programmer can also lock it again
+guard2.lock();
+We should mention that the std::unique_lock has also some other member functions. You can look it up here.
+
+When to use std::unique_lock ?
+There are at least two reasons for using std::unique_lock. Sometimes we are forced to use it: other functions require it as an input. And other times using std::unique_lock allows us to have more parallelizable code.
+
+Using functions that requires std::unique_lock
+In Condition variable, we had to use the std::unique_lock, because std::condition_variable::wait(...) requires std::unique_lock as an input.
+The std::condition_variable::wait(...) unlocks the mutex and waits for the std::condition_variable.notify_one() member function call. Then, wait(...) reacquires the lock and proceeds.
+We recognize that wait(...) member function requires std::unique_lock. The function can not use usual std::lock_guard, because it unlocks/locks the mutex.
+
+The std::unique_lock has all of the functionalities of the std::lock_guard. Everything which is possible to do with std::lock_guard is also possible to do with std::unique_lock. So, when should we use std::lock_guard?
+The rule of thumb is to always use std::lock_guard. But if we need some higher level functionalities, which are available by std::unique_lock, then we should use thestd::unique_lock.
+
+Future and promise(C++11)
+#include <future>
+future 
+Future is used to return value from thread.
+
+C++11 Way : Using std::future and std::promise
+
+If want to return value from child thread to main thread:
+Old Way : Share data among threads using pointer
+e.g.
+void factorial(int no, int& x)
+{
+	int res=1;
+	for(int i=no; i>0; i--)
+		res *= i;
+	x = res;
+}
+
+int main()
+{
+	int x;
+	thread t1{factorial, ref(x)};
+	//
+	t1.join();
+	return 1;
+}
+ 
+But in above approach we need to do extra 3 things:
+1. As ‘x’ is shared variable between main thread and child thread, to protect it need to define mutex.
+	mutex m; // as a global variable
+2. To insure that the child thread first save result into x and then main thread used it. Need to use condition_variable.
+	condition_variable var; // as a global variable
+3. Define these two global variable mutex and condition_variable is ugly itself.
+
+To avoid this we can use future. 
+
+#include <future>
+int factorial(int x)
+{
+	int res=1;
+	for(int i=no; I>0; I++)
+		res *= i;
+	return res;
+}
+
+Int main()
+{
+	int x =4;
+	future<int> f = async(launch::async,  factorial, x);
+	//
+	f.get(); // get res here from child thread. Here its block till value not return from factorial thread. 
+	//To avoid this we can write below async call
+
+	async( fact(x) )
+	.then([] (future<int> f)
+	{
+		cout<<f.get()<<endl;
+	});
+	
+
+	return 1;
+}
+
+std::async and std::launch::async
+If you need the result of an asynchronous operation, then you have to block, no matter what library you use. The idea is that you get to choose when to block, and, hopefully when you do that, you block for a negligible time because all the work has already been done.
+Note also that std::async can be launched with policies std::launch::async or std::launch::deferred. If you don't specify it, the implementation is allowed to choose, and it could well choose to use deferred evaluation, which would result in all the work being done when you attempt to get the result from the future, resulting in a longer block. So if you want to make sure that the work is done asynchronously, use std::launch::async.
+
+promise
+We also use future to send value to child thread from parent thread using promise
+
+
+Void factorial(future<int>& f)
+{
+	int no = f.get();		// If not get value here from parent/main thread then it throws the exception
+	int res=1;
+	for(int I=no; I>0; I++)
+		res *= I;
+}
+
+Int main()
+{
+	promise<int> p; 
+	future<int> f = p.get_future();
+	
+	future<int> f1 = async(launch::async, factorial, ref(f)); // Main thread promise to the child thread that main thread setting the value of ‘no’ in future
+	p.set_value(4);
+
+	//
+	return 1;
+}
+
+
+
+// Mutex
+#include <iostream>
+#include <map>
+#include <string>
+#include <chrono>
+#include <thread>
+#include <mutex>
+ 
+
+Std::mutex m;
+m.try_lock();
+//Do something
+m.unlock();
+
+// global variable
+std::map<std::string, std::string> g_pages; 
+std::mutex g_pages_mutex;				
+ 
+void save_page(const std::string &url)
+{
+    // simulate a long page fetch
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::string result = "fake content";
+ 
+    std::lock_guard<std::mutex> guard(g_pages_mutex);
+    g_pages[url] = result;
+}
+ 
+int main() 
+{
+    std::thread t1(save_page, "http://foo"); // Adding element into the map which is a global variable
+    std::thread t2(save_page, "http://bar”);// same here - adding another entry via calling another thread.
+    t1.join();
+    t2.join();
+ 
+    // safe to access g_pages without lock now, as the threads are joined
+    for (const auto &pair : g_pages) {
+    std::cout << pair.first << " => " << pair.second << '\n';
+    }
+}
+
+
+condition_variable
+
+The condition_variable class is a synchronization primitive that can be used to block a thread, or multiple threads at the same time, until another thread both modifies a shared variable (the condition), and notifies the condition_variable.
+The thread that intends to modify the variable has to
+1. acquire a std::mutex (typically via std::lock_guard)
+2. perform the modification while the lock is held
+3. execute notify_one or notify_all on the std::condition_variable (the lock does not need to be held for notification)
+
+// In below code CPU usage - 100%
+bool var = true;
+void ThreadFun(mutex& m)
+{
+	unique_lock<mutex> lock(m);
+	while (var)
+	{
+		//
+	}
+	cout << "End of thread"<<endl;
+}
+
+int main()
+{
+	mutex m;
+	thread th(ThreadFun, ref(m));
+	this_thread::sleep_for(chrono::seconds(15));
+	var = false;
+
+	th.join();
+	cout << "End of code..."<<endl;
+}
+
+// with condition_variable, CPU utilization is very less 
+#include <iostream>
+#include <string>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+ 
+std::mutex m;
+std::condition_variable cv;
+std::string data;
+bool ready = false;
+bool processed = false;
+ 
+void worker_thread()
+{
+    // Wait until main() sends data
+    std::unique_lock<std::mutex> lk(m);
+    cv.wait(lk, []{return ready;});
+ 
+    // after the wait, we own the lock.
+    std::cout << "Worker thread is processing data\n";
+    data += " after processing";
+ 
+    // Send data back to main()
+    processed = true;
+    std::cout << "Worker thread signals data processing completed\n";
+ 
+    // Manual unlocking is done before notifying, to avoid waking up
+    // the waiting thread only to block again (see notify_one for details)
+    lk.unlock();
+    cv.notify_one();
+}
+ 
+int main()
+{
+    std::thread worker(worker_thread);
+ 
+    data = "Example data";
+    // send data to the worker thread
+    {
+        std::lock_guard<std::mutex> lk(m);
+        ready = true;
+        std::cout << "main() signals data ready for processing\n";
+    }
+    cv.notify_one();
+ 
+    // wait for the worker
+    {
+        std::unique_lock<std::mutex> lk(m);
+        cv.wait(lk, []{return processed;});
+    }
+    std::cout << "Back in main(), data = " << data << '\n';
+ 
+    worker.join();
+}
+Output:
+main() signals data ready for processing
+Worker thread is processing data
+Worker thread signals data processing completed
+Back in main(), data = Example data after processing
+
+Atomic:
+=====
+Double checked locking:
+class Foo {
+public:
+    static Foo* Instance();
+private:
+    Foo() {}
+    static atomic<Foo*> pinstance;
+    static mutex m_;
+};
+
+atomic<Foo*> Foo::pinstance { nullptr };
+std::mutex Foo::m_;
+
+Foo* Foo::Instance() {
+  if(pinstance == nullptr) {
+    lock_guard<mutex> lock(m_);
+    if(pinstance == nullptr) {
+        pinstance = new Foo();
+    }
+  }
+  return pinstance;
+}
+
+How Can You Create Background Tasks With C++11 Threads?
+Answer :
+You can make a std::thread run in the background by calling std::thread::detach() on it. Once detached, a thread continues to run in the background and cannot be communicated with or waited upon to complete. When you detach a thread, the ownership and control passes over to the C++ Runtime Library, which ensures that the resources allocated to the thread are deallocated once the thread exits.
+
+Can The Ownership Of C++11 Threads Be Transferred At Runtime?
+Answer :
+Yes. std::thread object owns a resource, where the resource is a current thread of execution. You can call std::move to move the ownership of the underlying resource from one std::thread object to another. The question is – why would you want to do that? Here's a scenario:You want to write a function that creates a thread but does not want to wait for it to finish. Instead it wants to pass the thread to another function which will wait for the thread to finish and execute some action once the execution is done.
+E.g.
+void FireHTTPGet()
+{
+std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+  cout << "Finished Executing HTTP Get"<< endl;
+}
+void ProcessHTTPResult(thread t1)
+{
+  t1.join();
+  cout << "HTTP Get Thread Finished Executing - Processing Result Data!" << endl;
+}
+int main()
+{
+  thread t11(FireHTTPGet);
+  thread t12(ProcessHTTPResult, std::move(t11));
+  //Do bunch of other processing without waiting for t11 to finish - instead now we've shouldered off the 
+  // responsibility of monitoring t11 thread to t12.
+  //Finally wait for t12 to finish
+  t12.join();
+  return 0;
+}
+
+What Is C++11 Thread Local Storage (thread_local)?
+Answer :
+A thread_local object comes into existence when a thread starts and is destroyed when the thread ends. Each thread has its own instance of a thread-Local object.
+To fully understand the implications, let's look at an example- 
+here we'll declare a global variable "globalvar" as thread_local. 
+This'll give each thread it's own copy of globalVar and any modifications made to globalVar will only persist inside that particular thread.In the example below,
+ each of the two threads are modifying globalVar –  but they are not seeing each other's change, neither is the main thread.
+e.g.
+thread_local int globalVar = 0;
