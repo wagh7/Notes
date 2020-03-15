@@ -1,0 +1,546 @@
+String
+
+* Ascii range
+	0-9  =>	48-57
+	A-Z	=>	65-90
+	a-z	=>	97-122
+
+strlen() and sizeof()
+char ch[6] = "Akash";  // sizeof(ch) // return 6 // And this a const char.
+				    // strlen(ch)  // return 5
+char* str = "Akash";  // sizeof(str) // return 4(size of ptr), if you want to length of string - "Akash", you should use strlen()
+				// strlen(str) // return 5(not include \0 char)
+
+* Array of character: Const pointer
+Char str1[6] = “Akash”;        // sizeof(str1) : 6.   strlen(str1): 5
+char str2[6] = “wagh”;         // sizeof(str2) : 6.   strlen(str2): 4
+
+str1 = str2;	//error: Array name e.g. str1 is a constant pointer;
+			//so not allowed to change its initial address
+
+str1 = “temp12”;	//error
+
+* Printf for string variable  char str[10] = “Aka sh”;
+	%s str : Aka sh
+	%c str[0] : A
+	%c *str : A
+	%c *(&str)	: A
+	%d str : 9999(address of first char)
+	%d &str : 9999(address)
+	%d &(str[0]) : 9999(address)
+
+char a[] = "hello";
+My understanding is that a acts like a constant pointer to a string. I know writing a++ won't work, but why?
+No, it's not OK to increment an array. Although arrays are freely convertible to pointers, they are notpointers. Therefore, writing a++ will trigger an error.
+
+int Arr[4] = {1,2,3,4};
+//Arr++;	// Not allowed
+ int* ptr = Arr;
+ ptr++;	// Allowed
+
+String functions:
+strcpy is a unsafe function. When you try to copy a string using strcpy(), to a buffer which is not large enough to contain it, it will cause a buffer overflow.
+strcpy_s() is a security enhanced version of strcpy(). With strcpy_s you can specify the size of the destination buffer to avoid buffer overflows during copies.
+
+<string.h>
+Memset
+void *memset(void *ptr, int x, size_t n);
+
+Memcpy
+memcpy (str1, str2, sizeof(str2)); 
+
+char tuna[5];  // a buffer which holds 5 chars incluing the null character.
+char salmon[] = "A string which is longer than 5 chars";
+
+char* strcpy( tuna, salmon ); // This will corrupt your memory because of the buffer overflow.
+
+char* strcpy_s( tuna, 5, salmon ); // strcpy_s will not write more than 5 chars.
+
+char *strncpy( char *dest, const char *src, size_t count );
+errno_t strncpy_s(char *restrict dest, rsize_t destsz, const char *restrict src, rsize_t count);
+
+
+Diff between memcpy and strcpy
+strcpy copy till he get null char(‘\0’).
+But in chase of memcpy it copy number char as per given length. 
+
+
+strtok
+int main() 
+{ 
+    char str[] = "Geeks-for-Geeks"; 
+  
+    // Returns first token 
+    char* token = strtok(str, "-"); 
+  
+    // Keep printing tokens while one of the 
+    // delimiters present in str[]. 
+    while (token != NULL) { 
+        printf("%s\n", token); 
+        token = strtok(NULL, "-"); 
+    } 
+  
+    return 0; 
+} 
+
+strtok_r
+int main() 
+{ 
+    char str[] = "Geeks for Geeks"; 
+    char* token; 
+    char* rest = str; 
+  
+    while ((token = strtok_r(rest, " ", &rest))) 
+        printf("%s\n", token); 
+  
+    return (0); 
+} 
+
+
+Signed char and unsigned char
+Char is a smallest int in C
+
+Signed char : -128 - 127
+Unsigned char: 0 - 255
+
+
+Limits.h
+
+
+Problem:
+Maximum below string problem can get solved by using arr of ascii values :
+size_t Arr[255] = {0};
+Input char cast to unsigned char.
+
+
+Find longest/All palindrome substring in given string.
+https://www.geeksforgeeks.org/longest-palindromic-substring-set-2/
+
+ 0.  Reverse words in a given string
+	e.g. How are you. 
+	o/p: you are How.
+Sol: reverse each word in sentence.
+		woH era uoy.
+	then reverse whole sentence.
+		you are How.
+	
+1. Check two strings are anagram or not. 
+	 e.g.  cat and act are anagram strings
+	Method 1:
+	1) Sort both strings
+	2) Compare the sorted strings
+	
+	Method 2:
+	1) int arr[256]={0}
+
+2. print first non repeating char in given string
+	use hash table: if input string small
+	use array of int: if input string is long
+		int arr[256]={0}
+3. How to Print duplicate characters from String?/ Remove duplicate char from string
+4. Reverse string
+5. How to check if a String contains only digits?
+6. How to count occurrence of a given character in String?
+7. How to convert numeric String to an int? (Below have code)(Imp)
+8. Get Array of integer from given string.(Imp)
+9. Convert int to string(Imp)
+10. How to replace each given character to other e.g. blank with %20?
+11. How to check if String is Palindrome?
+12. How to remove duplicate characters from String?
+13. How to check if a String is valid shuffle of two String?
+14. Write a program to check if a String contains another String e.g. indexOf()?(Imp)
+15. How  to return highest occurred character in a String?
+16. delete duplicate char - using two counter
+17. remove substring from string - using two counter(Imp)
+
+
+Diff between signed and unsigned char
+Unicode?
+
+stream
+
+Switch case	
+
+14.  
+For substring
+int getSubStringIndex(char* ch1, char* ch2, int lenCh1, int lenCh2)
+{
+    if(lenCh1<=0 || lenCh2<=0)
+        return -1;
+    if(lenCh1<lenCh2)
+        return -1;
+    int i;
+    int j = 0;
+    for(i=0; i<lenCh1; i++)
+    {
+        if(ch1[i] == ch2[j])
+        {
+            if(j == lenCh2-1)
+                break;
+            j++;
+        }
+        else
+        {   if(j>0)
+                i=i-(j);
+            j = 0;
+        }
+    }
+    if(j==lenCh2-1)
+        return lenCh1-lenCh2-1;
+    else
+        return -1;
+}
+int main()
+{
+    char* ch1 = "xyzaaabcde";
+    char* ch2 = "ab";
+    
+    int index = getSubStringIndex(ch1, ch2, 10, 2);
+    cout<<"Index of Substring: "<<index<<endl;
+    return 0;
+}
+
+This is for sub sequence and not for substring
+    char str1[] = "gksrek"; 
+    char str2[] = "geeksforgeeks"; 
+    int m = strlen(str1); 
+    int n = strlen(str2); 
+
+bool isSubSequence(char str1[], char str2[], int m, int n) 
+{ 
+   int j = 0; // For index of str1 (or subsequence 
+  
+   // Traverse str2 and str1, and compare current character  
+   // of str2 with first unmatched char of str1, if matched  
+   // then move ahead in str1 
+   for (int i=0; i<n&&j<m; i++) 
+       if (str1[j] == str2[i]) 
+         j++; 
+  
+   // If all characters of str1 were found in str2 
+   return (j==m); 
+} 
+
+
+Convert int to string
+——————————
+char* GetString(int no)
+{	
+	int temp = no;
+	int m;
+	char ch;
+	vector<char> v;
+	char str[10];
+	while(temp > 0)
+	{	
+		m = temp % 10;
+		ch = m + 48;
+		v. push(ch)
+		temp = temp/10;
+	}
+	// copy char from vector v to string str
+	
+	return str;
+}
+
+Remove duplicate chars from string
+—————————————————
+
+void removeDuplicates(char ch[])
+{
+
+	if (ch == NULL)
+		cout << "\n Input string is empty";
+	
+	else
+	{
+		int Arr[255] = {0};
+
+		int j = 0;
+		int i = 0;
+
+		for (i = 0; i < strlen(ch); i++)
+		{
+			
+			if (Arr[ch[j]] == 0)
+			{
+				Arr[ch[j]] += 1;
+				ch[j] = ch[i];
+				j++;
+			}
+			else
+			{
+				if ( (i == strlen(ch) - 1) && (ch[j] != ch[i]) ) 
+				// ch[j] != ch[i] this check is avoid increment of j when last and second last char is same 
+				{
+					ch[j] = ch[i];
+					j++;
+				}
+				else
+					ch[j] = ch[i + 1];
+			}
+		}
+		
+		ch[j] = '\0';
+
+		cout << ch;
+	}
+}
+
+METHOD 2:
+// CPP program to remove duplicate character 
+// from character array and print in sorted 
+// order 
+#include <bits/stdc++.h> 
+using namespace std; 
+  
+char *removeDuplicate(char str[], int n) 
+{ 
+    // create a set using string characters 
+    // excluding '\0' 
+    set<char>s (str, str+n-1); 
+  
+    // print content of the set 
+    int i = 0; 
+    set<char>::iterator it;
+    for (it = s.begin(); it != s.end(); it++)
+	{
+		str[i] = *it;
+		i++;
+	}   
+
+    str[i] = '\0'; 
+  
+    return str; 
+} 
+  
+// Driver code 
+int main() 
+{ 
+   char str[]= "geeksforgeeks"; 
+   int n = sizeof(str) / sizeof(str[0]); 
+   cout << removeDuplicate(str, n); 
+   return 0; 
+} 
+
+
+
+String to int
+——————
+//assuming- input string having only valid digit characters
+
+#include <iostream>
+#include "conio.h"
+#include <string.h>
+using namespace std;
+
+int main()
+{
+    //if - char found
+    char str[6];
+    cout<<"\nEnter String\n";
+    cin>>str;
+    
+    int total;
+    int no;
+    int flag =0;
+    int i = 0;
+    if(str[0] == ‘-‘)  // to take care negative number
+    {
+        i++;
+        flag = 1;
+    }
+    
+    int len = strlen(str);
+    for(; i<len; i++)
+    {
+        no = str[i] - 48;
+        total = total * 10 + no;
+    }
+    if (flag==1)
+        total = total * -1;
+    cout<<endl;
+    cout<<total;
+    
+    return 0;
+}
+
+
+Get Array int from string
+————————————
+#include <iostream>
+#include "conio.h"
+#include <string.h>
+using namespace std;
+
+int main()
+{
+    //if - char found
+    char str[10];
+    cout<<"\nEnter String\n";
+    cin>>str;
+    int Arr[10];
+    int total=0;
+    int no=0;
+    int j=0;
+    
+    int len = strlen(str);
+    for(int i=0; i<len; i++)
+    {
+        if((int)str[i] > 47 && (int)str[i] < 58)
+        {
+            no = str[i] - 48;
+            total = total * 10 + no;
+            
+            if(i == len-1 && total != 0)
+            {
+                
+                Arr[j] = total;
+            }
+            
+        }
+        else
+        {
+            if(total != 0)
+            {
+                Arr[j++] = total;
+                total = 0;
+                if(i == len-1)
+                    j--;
+            }
+        }
+    }
+    
+    cout<<endl<<j<<endl;
+    for(int i=0; i<=j; i++)
+        cout<<Arr[i]<<endl;
+    
+    return 0;
+}
+
+
+Reverse word
+———————
+#include <isotherm>
+#include "conio.h"
+#include <string.h>
+using namespace std;
+
+int main()
+{
+    char str[15];
+    char str1[15];
+    cout<<"Enter string \n";
+    cin.get(str,15);
+    
+    int m=0;
+    int j=0;
+    int len = strlen(str);
+    for(int i = len-1; i>=0; i--)
+    {
+        if(str[i] != ' ')
+        {
+            j++;
+            if(i!=0)
+                continue;
+        }
+        if(i==0)
+            i--;
+        for(int k = i+1; k<=i+j; k++)
+        {
+            str1[m++] = str[k];
+            
+        }
+        str1[m++] = ' ';
+        j= 0;
+        
+    }
+    cout<<str1;
+
+    return 0;
+}
+
+Print all permutations of string
+https://www.geeksforgeeks.org/write-a-c-program-to-print-all-permutations-of-a-given-string/
+
+// permute(str, 0 , strlen(str)-1);
+void swap(char *x, char *y) 
+{ 
+    char temp; 
+    temp = *x; 
+    *x = *y; 
+    *y = temp; 
+} 
+
+void permute(char *a, int l, int r) 
+{ 
+   int i; 
+   if (l == r) 
+     printf("%s\n", a); 
+   else
+   { 
+       for (i = l; i <= r; i++) 
+       { 
+          swap((a+l), (a+i)); 
+          permute(a, l+1, r); 
+          swap((a+l), (a+i)); //backtrack 
+       } 
+   } 
+} 
+
+
+How to check if a String is valid shuffle of two String
+
+// Returns true if C is an interleaving of A and B,
+// otherwise returns false
+bool isInterleaved (char *A, char *B, char *C)
+{
+    // Iterate through all characters of C.
+    while (*C != 0)
+    {
+        // Match first character of C with first character
+        // of A. If matches them move A to next 
+        if (*A == *C)
+            A++;
+ 
+        // Else Match first character of C with first 
+        // character of B. If matches them move B to next 
+        else if (*B == *C)
+            B++;
+  
+        // If doesn't match with either A or B, then return
+        // false
+        else
+            return false;
+         
+        // Move C to next for next iteration
+        C++;
+    }
+ 
+    // If A or B still have some characters, then length of
+    // C  is smaller than sum of lengths of A and B, so 
+    // return false
+    if (*A || *B)
+        return false;
+ 
+14. How  to return highest occurred character in a String?
+
+void getMostRepeatedChar(char str[])
+{
+    char ch;
+    int Arr[256]={0};
+    int total = 0;
+    for(int i=0; i<strlen(str); i++)
+    {
+        Arr[str[i]] +=1;
+        if(total < Arr[str[i]])
+        {
+            total = Arr[str[i]];
+            ch = str[i];
+        }
+    }
+    cout<<ch<<" : "<<total;
+}
+
+
+

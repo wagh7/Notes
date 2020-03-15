@@ -1,0 +1,319 @@
+REST
+
+Network Security
+
+Terminology
+
+Plain text
+Cipher text
+Encryption
+Decryption
+Cryptography: Study of ENC
+Cryptanalysis: Study of DEC
+Cryptology: Study of ENC and DEC
+Key
+
+Encryption
+	Symmetric Enc
+		Same key use for ENC and DEC
+		That key known as the SECRET key
+		Same key use for encryption and decryption
+	Asymmetric Enc/ Public key cryptography
+		Two independent key, i.e. pair keys - private key and public key
+		Every user have this pair of keys
+		One key is use for encryption and another use for decryption
+
+Pwdump
+	Its for windows to decrypt the shadow file.
+
+Attacks
+Gaining the access of data by unauthorized user.
+	Accessing the data.
+	Modifying the data.
+	Destroying the data.
+
+Type of Attacks
+	Passive attack: No modification will be done.
+	Active attack: Data will modified by unauthorized user
+
+	Passive attack:
+		Release of the content: gain the access of the data transferring between the sender and receiver
+							Third party unauthorized user only observe the data.
+	Active Attack:
+		Types:
+			1.  Masquerade 
+				Unauthorized user(third party) get the access of sender data and then it send via third party to receiver.
+			2. Replay Attack
+				Receiver receive the same msg two times - one directly from sender(original/unaffected), and another from third party(may be modified).
+			3. Data Modification
+			4. Denial of Service
+
+Security Services:
+	Access control
+		Prevent unauthorized access to the resources.
+	Authentication
+		Verification of user Identity.
+	Confidentiality:
+		Provide security to the data send through the network.
+	Integrity:
+		No modification done to data while transmission.
+	Non-repudiation
+		Prevention from denial of services.	
+
+	Authorization: Access permissions 
+		What user wants to do? 	
+	Authentication: 
+		Who is doing?
+	
+Encryption Technics:
+Substitution:
+	useful short term
+	very much vulnerable.
+	1. Caeser Cipher
+	2. Playfair cipher
+
+Trasnposition:
+	Rail fence cipher
+	Row transposition cipher
+
+Load Balance:
+A load balancer is a device that acts as a reverse proxy and distributes network or application traffic across a number of servers. Load balancers are used to increase capacity (concurrent users) and reliability of applications.
+
+A load balancer mediates client access requests to servers and intelligently decides which server is best placed to fulfil each request.
+Here are the techniques that load balancers use:
+Round Robin
+Weighted Round Robin
+Least Connection
+Software Defined Networking (SDN) Adaptive
+
+Windows security settings:
+Firewall
+	Block all incoming connections
+		-Ignore your exception list
+	Allow app and feature through windows firewall
+		-Private/Public
+	Port number
+		-Allow or block
+	Inbound / Outbound rules
+
+Windows defender
+Privacy settings(win 10)
+ 
+Others
+Administrative tool -> Local security Policy -> Security Settings-> Security options
+User security Policies
+Password Policy
+
+Linux Security Settings:
+Securing Linux Machine Console Access
+1. If given the physical access, anyone can just reboot the machine and press "e" to change the runlevel(1)
+	using kernel password and change the root password.
+Sol: We need to configure the machine, So that it will prompt for "root" password even when going in runlevel 1.
+/etc/sysconfig/init
+change SINGLE=/sbin/sushell to SINGLE=/sbin/sulogin
+...
+# Set to '/sbin/sulogin' to prompt for password on single-user mode
+# Set to '/sbin/sushell' otherwise
+SINGLE=/sbin/sulogin       <--- changed from sushell to sulogin
+...
+
+2. If you pass "init=bin/bash" a the kernel parameter, you can bypass /etc/sysconfig/init configuration of prompting the root password.
+
+3. not allowed anyone to press e and change the kernel parameter
+	Secure the GRUB using GRUB password.
+	Generate the grub password in crippled form:
+	grub-crypt
+	>then set password.
+	Edit file /boot/grub/grub.conf, And add this encrypted grub password into this file.
+	--------------------------grub.conf----------------------------
+	password --encrypted <encrypted password generated above>
+	
+	title..............
+	lock
+	---------------------------------------------------------------
+	
+3. Stop the "Interactive startup" by setting "PROMPT=no" in /etc/sysconfig/init
+		
+
+		
+		
+	
+API: Application Programming Interface{e.g. Boost API}
+	A set of functions and procedures that allow the creation of applications which access the features or data of an operating system, application, or other service.
+		
+SOAP - Simple Object Access Protocol
+	Transfer data from server and client using HTTP and in XML format
+
+REST API - Representational State Transfer
+REST is a architecture use to implement web services(HTTP services).
+REST API allow to transfer data between Server and Client in JSON or XML format. 
+REST API are light waited and easy to maintain.
+Database(SERVER)  --->    API(Business logic)  --->   Windows/IOs/Android/Browsers
+
+REST Principles:
+	Uniform Interface
+		Send request with URL
+	State Less
+		Server not store any information of client.
+	Cachable
+		Client can cash the response from server.
+	Layered System
+		Server can send executable script/code to client.
+
+Casablanca C++ library for REST API development. 
+	
+HTTP verbs
+	GET  	/posts 		->return list / read
+	GET  	/post/id 	->return id details / read
+	DELETE 	/post/id  	->delete id from DB
+	POST	/post		->insert/create
+	PUT		/post/id	->edit/upend
+	PATCH	/post/id	->partial update
+	OPTIONS	/post
+	HEAD	/post		->return only HTTP header
+
+Parallel Patterns Library - PPL Tasks
+Ref: https://github.com/Microsoft/cpprestsdk/wiki/Programming-with-Tasks
+All long running or potentially blocking APIs in Casablanca are asynchronous, for example any API which makes a call going across a network. PPL tasks are used to represent the completion of some asynchronous work. In order to make Casablanca usable also with Visual Studio 2010 and on other non Windows platforms, we have built a special version of PPL tasks and included it in the Casablanca release. In order for it peacefully co-exist with PPL, we placed the special version in a different namespace, “pplx.”
+
+PPL used vastly in C++11 and Casablanca SDK.
+	e.g.
+	future f1 = async( fact, 4);
+	int x = f1.get();		// this is blocking call
+
+	PPL example:
+	async( fact, 4)
+	.then([] (future<int> f1)
+	{
+		int x = f1.get();
+	});
+
+HTTP Client example with Casablanca:
+Making an Http Request and Saving the Results
+Ref: https://github.com/Microsoft/cpprestsdk/wiki/Getting-Started-Tutorial
+
+#include <cpprest/http_client.h>
+#include <cpprest/filestream.h>
+
+using namespace utility;                    // Common utilities like string conversions
+using namespace web;                        // Common features like URIs.
+using namespace web::http;                  // Common HTTP functionality
+using namespace web::http::client;          // HTTP client features
+using namespace concurrency::streams;       // Asynchronous streams
+
+    auto fileStream = std::make_shared<ostream>();
+
+// Open stream to output file.
+    pplx::task<void> requestTask = fstream::open_ostream(U("results.html")).then([=](ostream outFile)
+    {
+        *fileStream = outFile;
+
+        // Create http_client to send the request.
+        http_client client(U("http://www.bing.com/"));
+
+        // Build request URI and start the request.
+        uri_builder builder(U("/search"));
+        builder.append_query(U("q"), U("cpprestsdk github"));
+        return client.request(methods::GET, builder.to_string());
+    });
+
+ // Handle response headers arriving.
+    .then([=](http_response response)
+    {
+        printf("Received response status code:%u\n", response.status_code());
+
+        // Write response body into the file.
+        return response.body().read_to_end(fileStream->streambuf());
+    });
+
+  // Close the file stream.
+    .then([=](size_t)
+    {
+        return fileStream->close();
+    });
+
+
+JSON - {Java Script Object Notation}
+====================================
+REST API transfer data between Server and Client in JSON or XML format.
+JSON is easy to parse in specially JAVA/java script.
+JSON format is easy.
+
+e.g. Employees details:
+
+{
+	Employees:
+	[
+		{
+			name: A,
+			id: 1,
+			Add: test,add123,
+			Mob No: [99.......23, 77.........90],
+			Sal: 4000
+		},
+		{
+			name: B,
+			id: 2,
+			Add: test12,add456,
+			Mob No: [99..34..23, 77..45..90],
+			Sal: 4500
+		},
+		{
+		
+		}
+	]
+}
+
+
+Additional Networking - Protocols
+SAML  - Security Assertion Markup Language
+
+To centralize user authentication.
+SAML is an open standard that allows identity providers (IdP) to pass authorization credentials to service providers (SP).
+SAML simplifies federated authentication and authorization processes for users, Identity providers, and service providers. SAML provides a solution to allow your identity provider and service providers to exist separately from each other, which centralizes user management and provides access to SaaS solutions.
+
+A SAML provider is a system that helps a user access a service they need. There are two primary types of SAML providers, service provider, and identity provider.
+
+A SAML Assertion is the XML document that the identity provider sends to the service provider that contains the user authorization. There are three different types of SAML Assertions – authentication, attribute, and authorization decision.
+
+SAML works by passing information about users, logins, and attributes between the identity provider and service providers. Each user logs in once to Single Sign On with the identify provider, and then the identify provider can pass SAML attributes to the service provider when the user attempts to access those services. The service provider requests the authorization and authentication from the identify provider. Since both of those systems speak the same language – SAML – the user only needs to log in once.
+
+Microsoft Active Directory or Azure are common identity providers.
+
+SSO: Single Sign On
+
+
+SAML vs. OAuth
+OAuth is a slightly newer standard that was co-developed by Google and Twitter to enable streamlined internet logins. OAuth uses a similar methodology as SAML to share login information. SAML provides more control to enterprises to keep their SSO logins more secure, whereas OAuth is better on mobile and uses JSON.
+Facebook and Google are two OAuth providers that you might use to log into other internet sites.
+
+LDAP
+Lightweight Directory Access Protocol
+it is a lightweight client-server protocol for accessing directory services, specifically X.500-based directory services. LDAP runs over TCP/IP or other connection oriented transfer services.
+In a network, a directory tells you where in the network something is located.
+
+An LDAP directory is organized in a simple "tree" hierarchy consisting of the following levels:
+* The root directory (the starting place or the source of the tree), which branches out to
+* Countries, each of which branches out to
+* Organizations, which branch out to
+* Organizational units (divisions, departments, and so forth), which branches out to (includes an entry for)
+* Individuals (which includes people, files, and shared resources such as printers)
+
+
+LDAP Authentication
+
+SDN - Software Defined Networking
+
+Limitations in existing network:
+Existing network don’t have centralized control.
+
+most basic SDN method centralizes network control and moves the control logic to an off-device computer resource.
+Each switch has the flow table instead of routing table(based on open flow protocol)
+
+Components:
+the SDN Controller acts as the “brains” of the network. It allows SDN users to gain a central look at the entire network, and empowers network administrators to instruct switches and routers how the forwarding plane should direct network traffic.
+
+southbound APIs push information to switches and routers below. You may not know it, but you’re probably already familiar with southbound APIs in the form of OpenFlow. Considered the primary SDN standard, OpenFlow is the first southbound API and is a heavily adopted protocol.
+
+northbound APIs push information above to the applications and business logic, giving network administrators the ability to pragmatically shape traffic and launch services.
+
