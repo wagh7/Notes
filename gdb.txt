@@ -1,0 +1,114 @@
+GDB
+
+>gcc -wall -o prime prime.cpp -g -lpthread -lm 
+>./prime
+>gdb prime core_file -tui		 {tui - text user interface }
+>where  					{shows the line number where exception occured}
+>bt {backtrace}
+>thread info
+1
+2
+3
+>thread 1{shows the curser or control on which line}
+Other gdb commands:
+run
+set args [arg1] [arg2]
+list
+next(n)
+c (continue)
+s (step into variable)
+break(b) line_number / function_name
+Info b
+b file_name: line_no
+b line_no if(var<10)
+https://www.electricmonk.nl/docs/gdb_debugging/gdb_debugging.html
+
+Backtrace:
+A backtrace is a summary of how your program got where it is. It shows one line per frame, for many frames, starting with the currently executing frame (frame zero), followed by its caller (frame one), and on up the stack.
+To print a backtrace of the entire stack, use the backtrace command, or its alias bt. This command will print one line per frame for frames in the stack. By default, all stack frames are printed. You can stop the backtrace at any time by typing the system interrupt character, normally Ctrl-c.
+
+> backtrace
+	It shows all levels of function calling. Not show the local variable values
+> backtrace full
+	It shows details of local variables.
+
+
+To find core dump file:
+> find / -name "*core.*"
+Typical name of the coredump is core.$PID
+
+how to generate a core dump for a hung process:
+>gcore <pid>
+
+if gcore is not available on your system then:
+>kill -ABRT <pid>
+
+Recording Application Crashes with Core Dumps
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/developer_guide/debugging-crashed-application
+To record application crashes, set up core dump saving and add information about the system.
+1. Enable core dumps. Edit the file /etc/systemd/system.conf and change the line containing DefaultLimitCORE to the following: DefaultLimitCORE=infinity 
+2. Reboot the system: # shutdown -r now 
+3. Remove the limits for core dump sizes: # ulimit -c unlimited To reverse this change, run the command with value 0 instead of unlimited.
+4. When an application crashes, a core dump is generated. The default location for core dumps is the application’s working directory at the time of crash.
+5. Create an SOS report to provide additional information about the system: # sosreport This creates a tar archive containing information about your system, such as copies of configuration files. 
+Inspecting Application Crash States with Core Dumps
+To identify the executable file where the crash occurred, run the eu-unstrip command with the core dump file:
+eu-unstrip -n --core=./core.9814
+In this example, the important details are the file name /usr/bin/sleep and the build-id 2818b2009547f780a5639c904cded443e564973e on the line containing the text [exe]. With this information, you can identify the executable file required for analyzing the core dump.
+
+Each executable file built on Red Hat Enterprise Linux contains a note with an unique build-id value. Determine the build-id of the relevant locally available executable files:
+$ eu-readelf -n executable_file
+
+
+The GNU Debugger (GDB) automatically recognizes missing debug information and resolves the package name.
+1. Start GDB attached to the application or library you want to debug. GDB automatically recognizes missing debugging information and suggests a command to run. $ gdb -q /bin/ls
+	Reading symbols from /usr/bin/ls...Reading symbols from /usr/bin/ls...(no debugging symbols found)...done.
+	Missing separate debuginfos, use: debuginfo-install coreutils-8.22-21.el7.x86_64
+	(gdb) 
+2. Exit GDB without proceeding further: type q and Enter. (gdb) q 
+3. Run the command suggested by GDB to install the needed debuginfo packages: # debuginfo-install coreutils-8.22-21.el7.x86_64
+Installing a debuginfo package for an application or library installs debuginfo packages for all dependencies, too. 
+To load debug symbol library in gdb
+Normally, GDB will load the shared library symbols automatically. You can control this behavior using set auto-solib-add command. However, in some cases (e.g. when debugging with gdbserver and having incompatible symbols or using old Android toolchains) GDB will not load the symbols automatically. In this case you can use the info sharedlibrary command to list the loaded shared libraries and the sharedlibrary command to force the symbols to be loaded.
+	# info sharedlibrary
+		<list of all shared library>
+	# sharedlibrary [Library Name]
+
+	If GDB does not automatically load debugging symbols for your library when debugging with gdbserver, please check the search path using the set solib-search-path command.
+	#set solib-search-path
+	#set solib-search-path off
+
+
+Debug Programs on Remote Server using GDBServer Example:
+Remote Debugging
+==============
+Windows:
+https://www.cprogramming.com/tutorial/visual_studio_remote_debugging.html
+https://www.thegeekstuff.com/2014/04/gdbserver-example/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%253A+TheGeekStuff+(The+Geek+Stuff)
+Windows:
+https://docs.microsoft.com/en-us/visualstudio/debugger/remote-debugging?view=vs-2019
+
+NOTE: Remote Debugging capability is not available in Visual Studio 2005/2008 Express. It also does not work on Windows XP Home edition, you will get an error saying "Not supported on this edition of Windows."
+
+Remote Debugging is simply the idea of running a process on a separate machine and then attaching to this process via the debugger in Visual Studio. Once this connection to the remote process is established, as far as the debugger is concerned it appears that the process is running locally.
+
+Target Machine - The computer that is running the remote debugging server and the application/process that needs to be debugged.
+Host Machine - The machine that is running the Visual Studio debugger
+
+The beauty of this is that you do not have to have Visual Studio installed on the machine just to debug the application, you can do it remotely on another machine that does have Visual Studio installed.
+
+Make sure that your application is over on the target machine, 
+while your program database file (commonly called <filename>.pdb) is located on the host machine; this file contains symbol information that the debugger will need to load once it attaches to the process. Also make sure that the executable you copy over is a binary match to the build of your source code, otherwise your debugger will not be synchronized and there will be all sorts of problems tracing through the code.
+
+PDB is a debug information file used by Visual Studio. These are system DLLs, which you don't have debug symbols for. 
+Go to Tools->Options->Debugging->Symbols and select checkbox "Microsoft Symbol Servers", Visual Studio will download PDBs automatically. Or you may just ignore these warnings if you don't need to see correct call stack in these modules.
+
+To set up a remote debugging session, you first need to copy the debug server over to the target machine. Find the folder under your installation directory for visual studio Common7\IDE\Remote Debugger. If you're running Visual Studio 2008 for example it the program path would be [drive]:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\Remote Debugger.
+Copy this entire directory to the target machine that is running the process you would like to debug. You can put it in a directly anywhere on the drive.
+
+On Target machine: Launch your application. Next, go into the directory you put the remote debugger in and launch msvsmon.exe.
+
+On your host machine:
+In Visual Studio go to Tools->Attach to process (Ctrl-Alt-P) and open up the Attach to Process dialog. Change the Transport to Remote (Native only with no authentication). Next where it says .Qualifier. you're going to have to click the Browse button to search for your target machine on the network Once you find your target machine the Attach to Process dialog will refresh with the processes that are running on the other system.
+Scroll down until you see the process you want to attach to. Click Attach. Once you do this the debugger will attach to this remote process and you can begin debugging as if you were running the application locally.
+
