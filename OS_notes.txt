@@ -1,0 +1,476 @@
+
+Kernel Types
+------------
+Monolithic kernel is a single large process running entirely in a single address space. It is a single static binary file. All kernel services exist and execute in the kernel address space. The kernel can invoke functions directly. Examples of monolithic kernel based OSs: Unix, Linux.
+
+In microkernels, the kernel is broken down into separate processes, known as servers. Some of the servers run in kernel space and some run in user-space. All servers are kept separate and run in different address spaces. Servers invoke "services" from each other by sending messages via IPC (Interprocess Communication). This separation has the advantage that if one server fails, other servers can still work efficiently. Examples of microkernel based OSs: Mac OS X and Windows NT.
+
+
+OS
+=========
+Functionality of OS:
+	1. Memory Management
+	2. Process management
+	3. CPU scheduling
+	4. File management
+	5. Security
+	6. I/o Management 
+
+System call
+-----------
+A system call is the programmatic way in which a computer program requests a service from the kernel of the operating system it is executed on. 
+A system call is a way for programs to interact with the operating system. 
+A computer program makes a system call when it makes a request to the operating system’s kernel. 
+System call provides the services of the operating system to the user programs via Application Program Interface(API). 
+It provides an interface between a process and operating system to allow user-level processes to request services of the operating system. 
+System calls are the only entry points into the kernel system. All programs needing resources must use system calls.
+
+Services Provided by System Calls :
+
+Process creation and management
+Main memory management
+File Access, Directory and File system management
+Device handling(I/O)
+Protection
+Networking, etc.
+
+TRAP
+When system calls, first TRAP instruction called, then CPU mode change from User space to Kernel space.
+
+
+Kernel Address Space
+User Address Space
+----------------------
+RAM is divided into two distinct regions- the user space and the kernel space.
+
+User Add Space- It is set of locations where normal user processes run. These processes can't access kernel space directly. 
+Some part of kernel space can be accessed via system calls.These system calls acts as software interrupts in kernel space.
+
+Kernel Add Space - kernel runs in the dedicated part of memory. Role of kernel space is to manage applications/ processes running in user space. 
+It can access all the memory. If a process perform a system call, a software interrupt is sent to kernel which then dispatches an appropriate interrupt handler.
+
+
+Context switching
+-----------------
+Memory registers:
+Instruction register - stores the address of current instruction being executed
+Program counter - stores address of next instruction
+Stack pointer
+
+
+Interrupt and Interrupt Handler
+-------------------------------
+Interrupt is an event, which causes the processor to temporarily hold the current execution. And start interrupt Handler.
+Interrupt is asynchronous. And system call is synchronous.
+e.g.
+While running processed P1, If there is instruction comes which causing some input/output operation.
+Then interrupt is occurs. And respective Interrupt Handler start.
+And context of process P1 is saved in its PCB.
+And context of another process P2 loaded/resume to CPU.
+Then CPU start to execute process P2. 
+
+There are three ways to move to the Kernel space from User space:
+1. TRAP instruction
+2. Interrupt
+3. Exception
+
+
+Memory Management
+==================
+Memory management is the functionality of an operating system which handles or manages primary memory and moves processes back and forth between main memory and disk during execution. Memory management keeps track of each and every memory location, regardless of either it is allocated to some process or it is free. It checks how much memory is to be allocated to processes. It decides which process will get memory at what time. It tracks whenever some memory gets freed or unallocated and correspondingly it updates the status.
+
+A computer’s memory management unit (MMU) is the physical hardware that handles its virtual memory and caching operations. The MMU is usually located within the computer’s central processing unit (CPU), but sometimes operates in a separate integrated chip (IC). All data request inputs are sent to the MMU, which in turn determines whether the data needs to be retrieved from RAM or ROM storage.
+
+A memory management unit is also known as a paged memory management unit.
+
+Logical Address:
+Address uniquely identifies a location in the memory. We have two types of addresses that are logical address and physical address. 
+The logical address is a virtual address and can be viewed by the user. The user can’t view the physical address directly. 
+The logical address is used like a reference, to access the physical address. 
+The fundamental difference between logical and physical address is that logical address is generated by CPU during a program execution whereas, the physical address refers to a location in the memory unit.
+
+https://www.geeksforgeeks.org/memory-management-mapping-virtual-address-physical-addresses/
+
+Bare machine
+	use to building dedicated machine
+	Memory
+  |---------|
+  |	OS. |---> This memory reserved for for OS process
+  |—————————|—> Fence register is here to store the base address.
+  |	Uaer|	 which not allow user process to access OS space.
+  |	Area|---> This is available for user
+  |---------|
+Single user model
+
+Now for multi user Model, swap in and swap out use
+	Memory
+  |---------|
+  |	OS		|
+  |—————————| swap out	_________
+  |  BUF1   |---------->|	|
+  |---------|		|  J1	|
+  |  BUF2   |<----------|  J2	|
+  |---------|  swap in	|	|
+  |	Uaer|---------
+  |	Area|              J3   |
+  |---------|
+
+  MFT - Multiple programing with fixed number of task
+  =====================================================
+  In this user space is divide into fixed number of partitions.
+  So that number of process can be reside there in memory.
+  Two register will be use 	1. Lower bound register
+				2. Upper bound register
+							
+	Later changed into 	1. Base reg
+				2. Limit reg
+						     						
+			|CPU|--->|logical Add|--->| Logical Add + Base reg = PA| PA <= Limit |—————yes————>run instruction in memory
+												|
+												|
+												No————————>TRAP
+														      
+									   
+	Partition allocation to a process using following two algorithm
+	1. 	First fit	----> caused Internal fragmentation
+							As in one partition can hold only one process, if partition size is 100k
+							and process need only 70k then 30k is still unused there in partition,
+							but no other process can use that, So its wastage of 30k, its called Internal fragmentation.
+				----> Also caused External fragmentation
+							If there is a process need 200k, in memory there is 200k available but not in continuous
+							and in single partition but in scattered way.
+							
+	2.	Best fit	----> Internal fragmentation may reduce but External fragmentation still there
+	
+MVT (task are not fixed)
+=========================
+Compaction : shift all unused/free partitions at the end to avoid External fragmentation
+but compaction is very slow process, till compaction process not finish CPU is idle
+
+Paged Memory management system
+================================
+user process divided into pages
+memory divided into frames
+page map table(PMT) use to manage the page number wrt frame number
+in PMT there is a column to store valid/invalid bit for each page entry.
+ 
+	|CPU|------>|pg no. , offset|	|frm no. , offset|—————>|Physical Address RAM|
+				|		  ^		
+				|	  |_______|		
+				|————————>|	  |		
+					  | PMT	  |
+					  |-------|
+
+Problem: if size of processes increases , number of pages increased-> PMT table size increased
+Solution:	TLB - transaction look ahead buffer
+
+Same code use by multiple users, i.e. by sharing the pages
+
+2 level pageing
+3 level pageing
+
+Segmentation memory management system
+======================================
+Moduler structure can be take care by segmentation
+like PMT in pageing, here is Segment table
+
+Paged segmented Memory management system
+============================================
+Each Segment divided into specific number of pages
+
+virtual memory management / Demand paging / Demand segmentation
+===================================================================
+No need to load all pages of process into main memory.
+when logical address generate by CPU, check into Page map table/ into physical memory that required page is available or not.
+If yes then proceeds.
+If not then page fault interrupt occurred.
+In Page map table there is interrupt bit. It set to one when interrupt occurred/page fault occurred.
+After page fault occurred, required page bring from secondary storage and do PMT update.
+check for the frame availability in RAM, if its not them remove frame from memory.
+Which page remove is depends on algorithm used, while removing check that page is updated/changed or not,
+If its updated then replace it into secondary memory.
+
+Work flow for demand page
+--------------------------
+	
+	start processing an instruction
+					|
+		Generate Address by CPU
+					|
+			Compute page number
+					|	yes
+			Check page is in MM-------------->Fetch data and compute instruction
+				   ??? 							Adjust Page map table PMT		    yes
+					|							Check page was modified-------------------> write back on disk
+				   	NO												
+					|
+			Page fault interrupt
+					|		NO
+	check is there is a free block in MM----------------------->Select a page from MM for replacement
+					|
+					|
+		Get disk add of Page from PMT
+					|
+				Read in Page
+					|
+				Adjust PMT
+					|
+	Restart the interrupted instruction
+	
+	
+| Page replacement Algo |
+==========================
+FIFO	:	First in page removed first
+Optimal :	The best page to removed. page which not being referred/used for max duration ahead
+LRU	:	Least recently used
+
+Advantages and Disadvantages of Paging
+Here is a list of advantages and disadvantages of paging −
+
+Paging reduces external fragmentation, but still suffer from internal fragmentation.
+Paging is simple to implement and assumed as an efficient memory management technique.
+Due to equal size of the pages and frames, swapping becomes very easy.
+Page table requires extra memory space, so may not be good for a system having small RAM.
+
+===================================================================================================
+				Process management
+===================================================================================================
+Process layout in linux:
+-----------------------
+STACK 
+
+DATA - static/global
+	Initialized 
+	Not initialized
+
+TEXT - Machine code
+-----------------------
+
+
+Swapping
+
+Swapping is a mechanism in which a process can be swapped temporarily out of main memory (or move) to secondary storage (disk) and 
+make that memory available to other processes. At some later time, the system swaps back the process from the secondary storage to main memory.
+
+Though performance is usually affected by swapping process but it helps in running multiple and big processes 
+in parallel and that's the reason Swapping is also known as a technique for memory compaction.
+
+
+Process:	Its a running instance of a computer program
+
+Process	 |---------------|
+_________|  P1	p2	p3	|		
+|	 |	|	|
+|header	 |    loader	|	p6		p5	|
+|Text	 |------------>	|				|
+|Data	 |		|		P4		|
+|ST	 |		|---------------|
+---------				|OS	_______	|
+					|		|PCB  |	|
+					|		|PD   |	|
+					|		|-----|	|
+					|---------------|
+
+PCB:	Process control block
+Its a structure having following information:
+pid,Memory info,file info,scheduling info
+Execution context: values of all cpu reg
+Exit status
+
+When the operating system moves a process from the running state, it must ensure that the process' bits and pieces are kept so it can be restarted. This means that the operating system must:
+-Preserve the process' areas of memory,
+-Protect these from other processes,
+-Save copies of the CPU registers used by the process,
+-Save information about any other resources used,
+-Mark the process' new state, and
+-If blocked, record which I/O operation the process is blocked on, so when I/O completes, the process can be moved back to `Ready'.
+All of this information is stored in the Process Control Block 
+
+
+Context switch:
+	After fixed time slot stop execution of 1st process, save its execution context into its PCB,
+	and load other process execution context and start execution of 2nd process.
+	-	During context switching CPU is idle so its wastage CPU time.
+
+Process creation:
+	#include <unistd.h>
+	fork();	:	To create child process from main process
+	wait();	:	to wait until child process complet its execution and terminate
+			by doing this, it can remove the entry of child process from Process table
+	exec(path/name_exe.exe);	:	to run other exe
+	
+1.	Orphan Process:	The process whose parent process has terminate/finished.
+2.	Daemon Process:	The process which running background.
+3.	Zombie Process:	The process which terminated but, its entry still there in Process table.
+	
+
+State of process execution
+——————————————————————————
+	Process is being 	Process enters into		Process got CPU			Process has fininshed 
+	created			ready queue			and start execution			execution
+
+	NEW---------------------->READY----------------- —————————————>Running————————————————————————-->HAULTED
+				    |    				|
+				process	 |				|I/O operations
+				send back|				|
+				to READY |<——————————————WAITNING———————
+				queue			process is waiting 
+							to complete I/O 
+							operations
+
+CPU scheduling
+	1.Short term scheduler:
+		handling CPU allocation to process
+	2.Long term scheduler:
+		handling process swap in and swap out(bring it from 2ndry storage to primary storage)
+	
+	3m.Medium term scheduler:
+		Decide which process swap in and swap out
+
+Queue			
+	1.	Ready queue:
+			Contains all process which are waiting for CPU time in ready state
+	2.	Waiting queue:
+			Contains all process which are waiting for i/o operation completion
+	3.	Multiple level queue:
+			there are multiple queues, and related processes splited into seprated queue
+			multiple queue for diff applications.
+			So any process not happy in perticular queue, the that process can change the queue
+			different level queue.
+
+CPU utilization-----------------------------------------------------------------
+Through put:
+	Number of process execute at unit time.
+Waiting Time:
+	Time spend by any process in READY queue.
+Response Time:
+	Time from arrival of process to 1st time CPU get.
+Turnaround Time:
+	Time from arrival of process to completion of process.
+CPU Burst Time:
+	Total CPU time required by any process to complete execution.
+I/O Burst Time:
+	Total i/o time required by any process to complete the execution.
+CPU Bound:
+	Process required high CPU time and low i/o time
+I/O Bound:
+	Process required high i/o time and low CPU time 
+--------------------------------------------------------------------------------
+
+CPU Scheduling Algo
+	Non-Pre-emptive:	don’t stop the execution of the process until its complete
+		1.	FCFS
+		2.	SJF
+	Pre-emptive:		Stop the execution of the the process b4 completion
+		1.	SJF
+		2.	Priority:
+				Starvation:	due to the lower priority, some process not get CPU time
+				Aging:	Increase the priority of process as its age passes
+		3.	Round Robin:	
+				Give fixed time quantum
+		4.	Multiple level queue
+				Process placed in different queue as per CPU bound / I/O bound
+		
+CPU Scheduling is select as per the requirement:
+	Time critical		:	SJF
+	GUI			:	Round Robin
+	background Services	:	FCFS
+	Imp utilities		:	Priority
+	
+___
+IPC
+---
+	1.	Shared memory
+			On browser downloading and playing video parallaly
+	2.	Message queue
+	3.	Pipe:
+			use to communication between two process in same machine
+	4.	Socket:
+			use to communication between two process in same machine as well as different machines
+	5.	Remote procedure call
+	
+
+COW:	Copy on write
+	When fork() call to create new child process from its parent, then full copy of parent process
+	not created initially, when child process start executing and changing data, then actual copy of
+	parent process created.
+	
+
+Thread
+========
+	-	Smallest unit of processing, run inside process.
+	-	process may have multiple threads.
+	-	Its a light weighted process.
+	-	When we create the thread , then it have its own stack section but text and data segments are of parent process.
+	-	Process required IPC to communicate with each other, But thread don’t required as their parent process is same.
+	-	Like Process control block PCB, for each thread there is Thread control block TCB
+
+	1.	Kernel thread
+	2.	User thread
+
+	
+1.	Mutex:
+		lock---------> read/write file(resource)----------->unlock
+		At a time only one thread can read/write to a file.
+		Strictly speaking, a mutex is locking mechanism used to synchronize access to a resource.
+2.	Semaphore:
+		It allows multiple thread to read the file/resource
+		But only one thread can write.
+		It use counter.
+
+
+Critical section problem???
+Dead lock???
+File System???
+================================================================================================================
+Refernce:
+https://minnie.tuhs.org/CompArch/Lectures/
+OS notes,CDAC
+Notes,Tata Power SED
+IIT Kharagpur, https://www.youtube.com/watch?v=7JejsVrrv8M&list=PLFN0Qcc8RnU62xhyLF4KEe5fxneHPAkog&index=3
+================================================================================================================
+
+
+
+
+
+`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
