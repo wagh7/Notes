@@ -1,0 +1,507 @@
+	
+***What Happens When You Type in a URL***
+
+https://www.google.com
+http: 80 - hiper text transfer protocol
+Https: 443 - secure version of http.
+		uses encryption of request/responses
+		It may be private or public key encryption, depends on web server
+www: world wide web
+	collection of web pages, resources
+
+Google.com : domain name
+DNS: domain name server
+	It has IP address for each domain name
+
+SSL: Secure Socket Layer Protocol
+SSL Certificate
+SSL uses 3 keys: private/public/session key
+https://www.digicert.com/ssl/
+
+Secure Sockets Layer (SSL) is a standard security technology for establishing an encrypted link between a server and a client—typically a web server (website) and a browser, 
+or a mail server and a mail client (e.g., Outlook).
+SSL allows sensitive information such as credit card numbers, social security numbers, and login credentials to be transmitted securely. 
+All browsers have the capability to interact with secured web servers using the SSL protocol. However, the browser and the server need what is called 
+an SSL Certificate to be able to establish a secure connection.
+
+
+1. Browser connects to a web server (website) secured with SSL (https). Browser requests that the server identify itself.
+2. Server sends a copy of its SSL Certificate, including the server’s public key.
+3. Browser checks the certificate root against a list of trusted CAs and that the certificate is unexpired, unrevoked, and that its common name is valid for the website that it is connecting to. If the 	browser trusts the certificate, it creates, encrypts, and sends back a symmetric session key using the server’s public key.
+4. Server decrypts the symmetric session key using its private key and sends back an acknowledgement encrypted with the session key to start the encrypted session.
+5. Server and Browser now encrypt all transmitted data with the session key.
+
+
+You enter a URL into a web browser
+The browser looks up the IP address for the domain name via DNS
+The browser sends a HTTP request to the server
+The server sends back a HTTP response
+The browser begins rendering the HTML
+
+https://www.instantssl.com/https-tutorials-ssl-certificates
+
+Big Endian
+network byte order.   High order byte at the starting address
+
+Little Endian
+Host byte order
+
+Private/secrete key/ symmetric key cryptography - Encryption
+	Private key use for encryption and decryption
+	useful for the encryption and decryption on same computer.
+	Less useful across the computer. Need to handle key transfer.
+
+Public key/ Asymmetric key cryptography - Encryption 
+
+
+ISP: Internet Service provider
+tier1 -> tier2 -> tier3
+
+Submarine cable
+
+Unicast: one to one
+Multicast: one to many
+Broadcast: one to all
+
+Half duplex
+Full duplex
+
+Default gateway:
+	Its an entry and exit point to the network(router)
+
+Network Devices:
+NIC
+Hub/Switches/Router
+
+Hub:
+	Broadcast message.
+	Bandwidth gets divided.
+	Less number of computers can connect with Hub.
+
+Switches:
+	Are advanced than Hub.
+	Bandwidth not gets divided.
+	large number of computers can connect.
+
+Routers:
+	Used to connect two different network
+	Default gateway.
+	Router will give the best way to travel packets
+	Routers have routing tables.
+	
+
+
+Terminology
+------------
+Port No
+	A port number is a way to identify a specific process to which an Internet or other network message is to be forwarded when it arrives at a server. For the Transmission Control Protocol and the 	User Datagram Protocol, a port number is a 16-bit integer that is put in the header appended to a message unit.
+
+	To identify the services/process. Each service/process(e.g. oracle/sql) runs on unique port number.
+
+
+	DIFFERENCE BETWEEN TCP AND UDP. TCP (Transmission Control Protocol) is connection oriented, whereas UDP (User Datagram Protocol) is connection-less. This means that TCP tracks all data sent, 		requiring acknowledgment for each octet (generally).
+		
+	HTTP - 80 
+	SMTP - 25 
+	POP3 - 110
+	TCP/IP - Total 65,536 ports available
+	Well known Port numbers < 1024
+	
+	FTP - 20/21
+	SSH - 22
+	Telnet - 23
+	SMTP - 25
+	DNS - 53
+	TFTP - 69
+	HTTP - 80
+	POP3 - 110
+	IMAP4 - 143
+	HTTPS - 443
+	
+	
+IP Address
+	Public IP: Need to purchase
+	Private IP: free of cost
+	
+	IPv4:
+		32-bit
+		Unicast
+		Multicast
+		Broadcast
+	IPv6:
+		128-bit
+		Unicast
+		Multicast
+		Anycast(one to closet)
+		
+	IPv4:
+	32-bit: 8.8.8.8
+	Total address: 2 to the power 32
+	
+	class-A : N.H.H.H : Total IPs : 2 to the power 24(8.8.8)
+		Address: 1-127
+	class-B : N.N.H.H : Total IPs : 2 to the power 16(8.8)
+		Address: 128-191
+	class-C : N.N.N.H : Total IPs : 2 to the power 8(8)
+		Address: 192-223
+	class-D : use for multicast operation
+		Address: 224-239
+	class-E : use for research/Development
+		Address: 240-255
+
+
+	Loop back address:
+	127.0.0.1
+		
+	Subnetting
+	==========
+	
+	Subnet Mask for class A: /8    : i.e. 8-bit for network 
+	Subnet Mask for class B: /16
+	Subnet Mask for class C: /24
+	
+	In subnetting network bit extend.
+	In subnetting subnet mask will change:
+	
+	e.g. 
+	/9 subnet mask will: 255.128.0.0 (comes under class A)
+	/10 ->  255.192.0.0
+	/23 ->  255.255.254.0   (comes under class B)
+	
+	in subnetting we add bits to network bits.
+	like: In case of /9, one bit is extra in /8. That means 1 bit add into network bit.  
+			And that one bit is Most significant bit. i.e. 2 to the power 7 = 128.
+			and that why subnetting mask for /9 will be 255.128.0.0
+			
+	Network ID:
+		The first id will be network id which represent network.(e.g. 255.168.1.0)
+		So we can not assign network id to any machine.
+		Router store network id instead of storing all ip in that network.
+	Broadcast ID:
+		This ip is used to send to all devices. (e.g. 255.168.1.255)
+		This IP also we can not assign to any devices.
+		
+		
+	e.g. If we need to 40 IP then we will use class C(having 255 ips).
+	But if we use directly(without subnetting) then 255-40 IPs will waste.
+	So we apply subnetting.
+		2 rest to power 6 = 64 (so 40 covers into 64 range)
+		We can divide 255 into 4 blocks(subnet) each of 64.
+		class C : 255.255.255.0 /24
+	How to calculate network bit:
+		For 40, 2 rest to power 6 = 64 is sufficient,
+		That means out of total 8 bit we only required 6 bit, so rest of 2(8-2) bits we can add to to network bit,
+			So network bit for clss C will be 24+2 = 26.
+		i.e. 255.255.255.0 /26
+		
+		
+DNS
+
+NIC: Network Interface Card/ Network Adapters
+
+			
+Protocol
+				
+				
+---------------------------------------------------------
+
+Network Topology
+	BUS
+		It transmits data only in one direction.
+		Every device is connected to a single cable
+
+		Advantages of Bus Topology:
+			It is cost effective.
+			Cable required is least compared to other network topology.
+			Used in small networks.
+			It is easy to understand.
+			Easy to expand joining two cables together.
+		Disadvantages of Bus Topology:
+			Cables fails then whole network fails.
+			If network traffic is heavy or nodes are more the performance of the network decreases.
+			Cable has a limited length.
+			It is slower than the ring topology.
+	RING
+		It is called ring topology because it forms a ring as each computer is connected to another computer, 
+		with the last one connected to the first. Exactly two neighbors for each device.
+
+		-A number of repeaters are used for Ring topology with large number of nodes, 
+			because if someone wants to send some data to the last node in the ring topology with 100 nodes, 
+			then the data will have to pass through 99 nodes to reach the 100th node. 
+			Hence to prevent data loss repeaters are used in the network.
+		-The transmission is unidirectional, but it can be made bidirectional by having 2 connections between each Network Node, 
+			it is called Dual Ring Topology.
+		-In Dual Ring Topology, two ring networks are formed, and data flow is in opposite direction in them. 
+			Also, if one ring fails, the second ring can act as a backup, to keep the network up.
+		-Data is transferred in a sequential manner that is bit by bit. 
+			Data transmitted, has to pass through each node of the network, till the destination node.
+
+		Disadvantages of Ring Topology:
+			Troubleshooting is difficult in ring topology.
+			Adding or deleting the computers disturbs the network activity.
+			Failure of one computer disturbs the whole network.
+	STAR
+		-In this type of topology all the computers are connected to a single hub through a cable. 
+			This hub is the central node and all others nodes are connected to the central node.
+		-Every node has its own dedicated connection to the hub.
+		-Hub acts as a repeater for data flow.
+		-Can be used with twisted pair, Optical Fibre or coaxial cable.
+		Advantages of Star Topology:
+			-Fast performance with few nodes and low network traffic.
+			-Hub can be upgraded easily.
+			-Easy to troubleshoot.
+			-Easy to setup and modify.
+			-Only that node is affected which has failed, rest of the nodes can work smoothly.
+		Disadvantages of Star Topology:
+			-Cost of installation is high.
+			-Expensive to use.
+			-If the hub fails then the whole network is stopped because all the nodes depend on the hub.
+			-Performance is based on the hub that is it depends on its capacity
+	MESH		
+		It is a point-to-point connection to other nodes or devices. All the network nodes are connected to each other. 
+		Mesh has n(n-1)/2 physical channels to link n devices.
+		There are two techniques to transmit data over the Mesh topology, they are :
+			Routing
+				In routing, the nodes have a routing logic, as per the network requirements.
+			Flooding
+				In flooding, the same data is transmitted to all the network nodes, hence no routing logic is required.
+		Advantages of Mesh Topology:
+			-Each connection can carry its own data load.
+			-It is robust.
+			-Fault is diagnosed easily.
+			-Provides security and privacy.
+		Disadvantages of Mesh Topology:
+			Installation and configuration is difficult.
+			Cabling cost is more.
+			Bulk wiring is required.
+-------------------------------------------------------------------------------------------------------------------------------------			
+			
+***TCP Protocol***
+Transmission control protocol
+HTTP : 80
+HTTPS: 443
+TELNET : 23	 	
+SSH: 22
+FTP: 21
+SMTP: 25
+POP : 110
+
+***UDP***
+User Datagram Protocol
+TFTP - 69
+DHCP - 67/68
+	It used to givr IP automatically to PC.
+SNMP - 161  ???
+	Simple network management protocol.
+
+DNS - 53: work with both TCP and UDP
+	
+Details
+=======
+
+HTTP: (https://www.tutorialspoint.com/http/http_overview.htm) - PORT-80
+1. Connectionless
+2. Media independent
+	Any type of data can be send by HTTP, as long as both client/server knows how to handle data
+Stateless
+	Server and Client know each other during current request.
+The HTTP protocol is a request/response protocol based on the client/server based architecture where web browsers, 
+robots and search engines, etc. act like HTTP clients, and the Web server acts as a server.	
+
+Telnet - 23 - TCP
+Protocol used on internet or LAN to provide bidirectional text oriented data connection.
+Client-Server protocol
+8-bit data connection over TCP.
+http://searchnetworking.techtarget.com/definition/Telnet
+
+SSH - 22 - TCP
+Same as Telnet but secured.
+Secure Shell (SSH) is a cryptographic network protocol for operating network services securely over an unsecured network.
+The best known example application is for remote login to computer systems by users.
+http://searchsecurity.techtarget.com/definition/Secure-Shell
+
+FTP - 21 - TCP
+File transfer protocal.
+
+TFTP - 69
+Its like FTP but lighter than FTP and use to transfer small file.
+It use UDP protocol at transmission layer.
+Use : diskless remote boot
+
+HTTPS - 443
+NTP - 123
+
+
+DNS - 
+Domain name service/server
+Resolve host name.
+DNS root server.
+
+
+-------------ISO OSI-------------
+
+-------------------------------
+OSI model AND TCP/IP (DOD)
+-------------------------------
+Application			---->----------------
+Presentation		---->	Application Layer
+Session 			---->----------------
+Transport			---->	Transport Layer
+Network				---->	Internet Layer
+DataLink			---->-----------------	
+Physical			---->	Network Access Layer
+						------------------
+
+7. Application Layer
+	Remote login to hosts: Telnet
+	File transfer: 
+		File Transfer Protocol (FTP-21)
+		Trivial File Transfer Protocol (TFTP-69)
+			Its like FTP but lighter than FTP and use to transfer small file.
+			It use UDP protocol at transmission layer.
+			Use : diskless remote boot
+
+	Electronic mail transport: Simple Mail Transfer Protocol (SMTP-25)
+	Networking support: Domain Name System (DNS-53)
+	Host initialization: BOOTP
+	Remote host management: 
+		Simple Network Management Protocol (SNMP)
+			Manages devices: Devices that typically support SNMP include cable modems, routers, switches, servers, workstations, printers...
+		Common Management Information Protocol over TCP (CMOT)
+		
+6. Presentation Layer
+	Code conversions - formatting
+	Encryption/Decryption
+	Compression
+	Its Application responsibility to provide the features of Presentation Layer, and not OS responsibility.
+	
+5. Session layer
+	Authentication
+	Authorization 
+	Session Restoration
+	Webinar
+	flow control
+	Synchronisation
+	Application responsibility to provide the features of Session Layer
+
+	create a        nhhyt5 via port number
+	SDP: Sockets Direct Protocol
+	SCP: Session Control Protocol
+	RPC: Remote Procedure Call Protocol
+	RTCP: Real-time Transport Control Protocol
+
+4. Transport Layer(segment)
+	-End to End delivery of data - Port to Port
+	-use protocol : TCP and UDP
+	-Flow control
+	-it gives sequence number to each segment, it helps to maintain sequence and data recovery on data lost.
+	-Segmentation:Break bigger data into smaller chunks
+	-Sequencing and error control
+
+	TCP:
+		-Connection oriented protocol
+		-Fast
+		-Send an acknowledgement
+
+	UDP:
+		-Connectionless protocol
+		-Very fast
+		-Not send acknowledgement
+		e.g. online audio/video call
+
+	PDU: protocol data unit
+
+3. Network Layer:(packet)
+	Source to destination delivery / host to host delivery
+	IP address tagging
+	routing: router work on this layer
+	Identify best path to destination
+	Fragmentation
+	Conjetion control
+	PDU : packets
+	Protocol : IPv4/IPv6 and IPX(internet packet exchange)
+
+2. DataLink layer:(frame)
+	node to node delivery
+	frames : each frame have mac address info(source mac and destination mac)
+	switches used at datalink layer
+	Protocol: Ethernet, HDLC-High level link control
+
+1. Physical Layer:(bits)
+	Convert data bits to electric signals and vice versa.
+	cable/connector/hubs
+
+SOME SERVICE RUN ON tcp AND SOME SERVICE RUN ON UDP(which is very fast)
+Each one TCP/UDP have 65,535 ports.
+
+IANA : Internet assign nuber authority
+Well known ports: 1-23
+Registered ports: 1024-49151
+Dynamic ports : 49152-65,535
+
+
+
+https://whatismyipaddress.com/  
+	IP Look up
+tracemail.com/
+traceroot.com/
+Email extractor : buy india email database
+bulk sms service
+fast.com/ spedtest.net
+iplocation.net
+submarinecablemap.com
+
+
+>ipconfig
+>ipconfig \all
+>getmac
+>ping (packet internet gopher)
+	ping 8.8.8.8 (ip of google)
+>route print (to print routing details)
+>tracert google.com	
+	
+run:
+ncpa.cpl
+
+lynx
+	browser 
+
+
+Socket Programming
+------------------
+https://www.geeksforgeeks.org/socket-programming-cc/
+
+Server:
+socket()
+blind(): to bind to the particular port number on their machine. needs port number and ip address
+listen()
+accept()
+Receive()/send()
+
+Client:
+socket()
+connect()
+send()/Receive()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
