@@ -13,12 +13,26 @@ Google.com : domain name
 DNS: domain name server
 	It has IP address for each domain name
 
-SSL: Secure Socket Layer Protocol
+::HTTP::
+HTTP is a TCP protocol.
+It is connection oriented but stateless.
+-Each time client request to the server new connection been created.
+-Each time server response connection deleted. And Server ready to accept connection from different client.
+This is because server handdled millons of request thats why it dont want to 
+be reserved for specific client on any specific time.
+And also server dont want to hold resources by specific client.
+
+
+::SSL:: Secure Socket Layer Protocol
 SSL Certificate
 SSL uses 3 keys: private/public/session key
 https://www.digicert.com/ssl/
 
-Secure Sockets Layer (SSL) is a standard security technology for establishing an encrypted link between a server and a client—typically a web server (website) and a browser, 
+
+SSL dump???
+
+Secure Sockets Layer (SSL) is a standard security technology for establishing an encrypted link between a server 
+and a client—typically a web server (website) and a browser, 
 or a mail server and a mail client (e.g., Outlook).
 SSL allows sensitive information such as credit card numbers, social security numbers, and login credentials to be transmitted securely. 
 All browsers have the capability to interact with secured web servers using the SSL protocol. However, the browser and the server need what is called 
@@ -27,8 +41,11 @@ an SSL Certificate to be able to establish a secure connection.
 
 1. Browser connects to a web server (website) secured with SSL (https). Browser requests that the server identify itself.
 2. Server sends a copy of its SSL Certificate, including the server’s public key.
-3. Browser checks the certificate root against a list of trusted CAs and that the certificate is unexpired, unrevoked, and that its common name is valid for the website that it is connecting to. If the 	browser trusts the certificate, it creates, encrypts, and sends back a symmetric session key using the server’s public key.
-4. Server decrypts the symmetric session key using its private key and sends back an acknowledgement encrypted with the session key to start the encrypted session.
+3. Browser checks the certificate root against a list of trusted CAs and that the certificate is unexpired, unrevoked, and that its 
+common name is valid for the website that it is connecting to. If the 	browser trusts the certificate, it creates, encrypts, 
+and sends back a symmetric session key using the server’s public key.
+4. Server decrypts the symmetric session key using its private key and sends back an acknowledgement encrypted with the session key 
+to start the encrypted session.
 5. Server and Browser now encrypt all transmitted data with the session key.
 
 
@@ -94,12 +111,16 @@ Routers:
 Terminology
 ------------
 Port No
-	A port number is a way to identify a specific process to which an Internet or other network message is to be forwarded when it arrives at a server. For the Transmission Control Protocol and the 	User Datagram Protocol, a port number is a 16-bit integer that is put in the header appended to a message unit.
-
+	A port number is a way to identify a specific process to which an Internet or other network message is to be forwarded 
+	when it arrives at a server. For the Transmission Control Protocol and the 	User Datagram Protocol, 
+	a port number is a 16-bit integer that is put in the header appended to a message unit.
+	
 	To identify the services/process. Each service/process(e.g. oracle/sql) runs on unique port number.
 
-
-	DIFFERENCE BETWEEN TCP AND UDP. TCP (Transmission Control Protocol) is connection oriented, whereas UDP (User Datagram Protocol) is connection-less. This means that TCP tracks all data sent, 		requiring acknowledgment for each octet (generally).
+DIFFERENCE BETWEEN TCP AND UDP. 
+	TCP (Transmission Control Protocol) is connection oriented, whereas UDP (User Datagram Protocol) is connection-less. 
+	This means that TCP tracks all data sent, 		
+	requiring acknowledgment for each octet (generally).
 		
 	HTTP - 80 
 	SMTP - 25 
