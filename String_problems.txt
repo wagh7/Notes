@@ -1,7 +1,7 @@
 String
 
 * Ascii range
-	0-9  =>	48-57
+	0-9 =>	48-57
 	A-Z	=>	65-90
 	a-z	=>	97-122
 
@@ -20,7 +20,7 @@ str1 = str2;	//error: Array name e.g. str1 is a constant pointer;
 
 str1 = “temp12”;	//error
 
-* Printf for string variable  char str[10] = “Aka sh”;
+* Printf for string variable char str[10] = “Aka sh”;
 	%s str : Aka sh
 	%c str[0] : A
 	%c *str : A
@@ -543,4 +543,109 @@ void getMostRepeatedChar(char str[])
 }
 
 
+Problem:
+1. Find length of the longest substring without repeating char
 
+int longestUniqueSubsttr(string str) 
+{ 
+    int n = str.size(); 
+    int cur_len = 1; // length of current substring, length from last to current repeating char
+    int max_len = 1; // result 
+    int prev_index; // previous index , 
+      
+    int* visited = new int[sizeof(int) * 256]; 
+  
+    for (int i = 0; i < 256; i++) 
+        visited[i] = -1; 
+  
+    visited[str[0]] = 0; 
+  
+    as 1, and visited[str[0]] is set */
+    for (int i = 1; i < n; i++) { 
+        prev_index = visited[str[i]]; 
+  
+        if (prev_index == -1 || i - cur_len > prev_index) 
+            cur_len++; 
+  
+        else { 
+            if (cur_len > max_len) 
+                max_len = cur_len; 
+  
+            cur_len = i - prev_index; 
+        } 
+  
+        // update the index of current character 
+        visited[str[i]] = i; 
+    } 
+  
+    if (cur_len > max_len) 
+        max_len = cur_len; 
+  
+    free(visited); // free memory allocated for visited 
+    return max_len; 
+} 
+
+2. Longest Common Substring
+
+// Recursion  
+// str1, str2
+// int lcs(lenStr1, lenStr2, 0)
+string X,Y;
+
+int lcs(int i, int j, int count)  
+{ 
+      
+    if (i == 0 || j == 0) 
+        return count;
+          
+    if (X[i-1] == Y[j-1]) { 
+        count = lcs(i - 1, j - 1, count + 1); 
+    } 
+        count = max(count, max(lcs( i, j - 1, 0), lcs( i - 1, j, 0))); 
+    return count; 
+} 
+
+// DP
+int LCSubStr(char *X, char *Y, int m, int n) 
+{   
+    int LCSuff[m+1][n+1]; 
+    int result = 0;  // To store length of the  
+                     // longest common substring 
+  
+    /* Following steps build LCSuff[m+1][n+1] in 
+        bottom up fashion. */
+    for (int i=0; i<=m; i++) 
+    { 
+        for (int j=0; j<=n; j++) 
+        { 
+  
+            // The first row and first column  
+            // entries have no logical meaning,  
+            // they are used only for simplicity  
+            // of program 
+            if (i == 0 || j == 0) 
+                LCSuff[i][j] = 0; 
+  
+            else if (X[i-1] == Y[j-1]) 
+            { 
+                LCSuff[i][j] = LCSuff[i-1][j-1] + 1; 
+				
+				if(LCSuff[i][j] > result)
+                {
+                    r = i;
+                    c = j;
+                }
+				
+                result = max(result, LCSuff[i][j]); 
+            } 
+            else LCSuff[i][j] = 0; 
+        } 
+    } 
+	for(int i = r-1; i>=(r-result);i--)
+    {
+     cout<<X[i]<<" ";   
+    }
+    cout<<endl;
+	
+    return result; 
+}
