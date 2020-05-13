@@ -1,4 +1,147 @@
 /*
+
+Private Constructor
+	If class have private constructor, then not allowed to derrived from this class.
+
+CRTP
+Curiously Recurring Template Pattern
+====================================
+https://www.codeproject.com/Articles/603818/Cplusplus-Runtime-Polymorphism-without-Virtual-Fun
+
+overload function
+at compile time 
+Static polymorphism achieves a similar effect to the use of virtual functions, 
+allowing the overloaded functions in the derived classes to be selected at compile time rather than at run time. 
+Using CRTP, a "Derived" class inherits a "Base<Derived>" template class where the Base class implements the Derived class’ 
+interface functions by typecasting the object and calling its interface member function. 
+
+In order to properly delete instances of derived classes, the Base class is first derived from a general Deletor class 
+which defines a virtual destructor. The virtual destructor provides deletion of derived objects through a pointer to the base class. 
+
+
+class Deletor {
+    public:  virtual ~Deletor() {}
+};
+ 
+template<typename T> class Base : public Deletor {
+    public: 
+ 
+        int  Run() { return static_cast<T*>(this)->DoIt(); }
+};
+ 
+class Derived1 : public Base<Derived1> {
+    ...
+    public:
+        int  DoIt() { // the actual implementation for Derived1 
+		}
+};
+ 
+class Derived2 : public Base<Derived2> {
+    ...
+    public:
+        int  DoIt() { // the actual implementation for Derived2 
+		}
+};
+ 
+int main() {
+    Derived1 Obj1;
+    Derived2 Obj2;
+ 
+    Obj1.Run(); // runs the actual DoIt() implementation 
+    Obj2.Run(); // runs the actual DoIt() implementation 
+};
+
+
+
+Function Try Block
+==================
+http://www.gotw.ca/publications/mill13.htm
+https://en.cppreference.com/w/cpp/language/function-try-block
+
+e.g.
+class throwingThings
+{
+	public:
+	throwingThings(int i)
+	{
+		if(i>2)
+		{
+			throw i;
+		}
+	}
+};
+class S
+{
+	public:
+	S(int val) try
+	 : tt(val)
+	{
+	}
+	catch(int )
+	{
+	}
+	throwingThings tt;
+};
+
+int main()
+{
+	S s{5};
+	return 5;
+}
+
+Moral #1: The primary purpose of function-try-blocks is to respond to an exception thrown from the 
+member initializer list in a constructor by logging and rethrowing, modifying the exception object and rethrowing, 
+throwing a different exception instead, or terminating the program. They are rarely used with destructors or with regular functions.
+
+Function-try-block does not catch the exceptions thrown by the copy/move constructors and the destructors 
+of the function parameters passed by value: those exceptions are thrown in context of the caller.
+
+Moral #2: Destructor function try blocks have little or no practical use, because destructors should never emit an exception.[7] Thus there should never be anything for a destructor function try block to detect that couldn't be detected with a normal try block -- and even if there were something to detect because of evil code (i.e., a member subobject whose destructor could throw), the handler would not be very useful for doing anything about it because it couldn't suppress the exception. The best it could do is would be to log something, or otherwise complain.
+
+Moral #3: All other function try blocks have no practical use. A regular function try block can't catch anything that a regular try block within the function couldn't catch just as well.
+
+int f(int n = 2) try {
+   ++n; // increments the function parameter
+   throw n;
+} catch(...) {
+   ++n; // n is in scope and still refers to the function parameter
+   assert(n == 4);
+   return n;
+}
+
+
+Static Lib
+Compile and assemple and not link to library.
+gcc -c test1.c test2.c
+ar rsv testlib.a test1.o test2.o
+
+gcc -o test.out test.c testlib.a
+OR
+gcc -o test.out test.c -L. -ltestlib
+OR
+gcc -o driver driver.o -L. -l_mylib
+https://www.geeksforgeeks.org/static-vs-dynamic-libraries/
+
+
+shared library:
+gcc -shared -o libmy.so libmy.o
+
+to make available this to all users:
+create a module and keep .so there e.g. /usr/locsl/lib/MyLib
+cd /etc/ld.so.conf.d/
+make a copy of libc.conf - mylib.conf
+and mentioned module path there i.e. /usr/locsl/lib/MyLib 
+
+// update cash 
+ldconfig
+ldconfig -p | grep libmy
+
+To compile prog with shared library:
+gcc -L/usr/locsl/lib/tempLib driver.c -o driver -lmy
+OR
+gcc -shared -o libhello.so -fPIC hello.c/
+
+
 Important library in C++
 <memory>
 <assert>
@@ -817,8 +960,8 @@ but *ptr + 1;  // not allowed.
 
 Reference
 It just a another name to the same memory location.
-Reference is a constant pointer.
-Can not reassign value to reference.
+Reference is a constant pointer and thats why Can not reassign value to reference.
+
 
 e.g.
 int z = 21; 
@@ -829,9 +972,10 @@ y++;		// value of y and x both increamented because both pointing to the same me
 y = z;		// And now value for x,y and z are same and that is 21
 
 Difference between Pointer and Reference
-1. pointer of pointer But reference of reference not allowed.
-2. not necessary to initialize the pointer but reference needs to initialize.
-3. Can take the address of pointer but not of reference.
+1. Pointer can initialize by NULL, but Reference can not allowed to initialize by NULL.
+2. pointer of pointer But reference of reference not allowed.
+3. not necessary to initialize the pointer but reference needs to initialize. 
+4. Can take the address of pointer but not of reference.
 
 
 This pointer
@@ -924,7 +1068,7 @@ int operator[](int index)
 e.g. ABC obj;
 	int value = obj[2];
 
-//	new	//
+//	new	// must return void* only
 void* operator new(size_t sz)
 	return malloc(sz);
 
@@ -1092,7 +1236,13 @@ you get to implement just one method in each of the derived classes. You don't h
 you just call GetArea and you get your result, independent of which concrete type is it."
 
 Diamond Problem / Virtual Base class
-In order to keep track of the single instance of the storable object, the compiler will provide a virtual function table (vtable) for classes transmitter and receiver. When a radio object is constructed, it creates one storable instance, a transmitter instance and a receiver instance. The transmitter and receiver classes have a virtual pointer in their vtables that stores the offset to the storable class. When the transmitter class or the receiver class goes to access any fields of the storable, it uses the virtual pointer in its vtable to find the storable object and find the field in it.
+In order to keep track of the single instance of the storable object, 
+the compiler will provide a virtual function table (vtable) for classes transmitter and receiver. 
+When a radio object is constructed, it creates one storable instance, 
+a transmitter instance and a receiver instance. The transmitter and receiver classes have a virtual pointer 
+in their vtables that stores the offset to the storable class. 
+When the transmitter class or the receiver class goes to access any fields of the storable, 
+it uses the virtual pointer in its vtable to find the storable object and find the field in it.
 
 virtual
 pure virtual function
@@ -1197,7 +1347,7 @@ C++ supports following 4 types of casting operators:
 
 1. const_cast
 2. static_cast
-3. dynamic_cast
+3. dynamic_cast RTTI
 4. reinterpret_cast
 
 1.const_cast(take pointer/reference only)
@@ -1320,8 +1470,26 @@ int main()
 
 
 Dynamic_cast(take pointer/reference only)
-============------------------------------------------------------------
-dynamic_cast for non-polymorphic types are not allowed. The base class shall have at least one virtual method. Only then that class can be called as polymorphic
+========================================
+dynamic_cast is useful when you don't know what the dynamic type of the object is. \
+It returns a null pointer if the object referred to doesn't contain the type casted to as a base class 
+(when you cast to a reference, a bad_cast exception is thrown in that case).
+
+if(Der_1 *j = dynamic_cast<Der_1*>(&stm))
+{
+  ...
+} 
+else if (Der_2 *e = dynamic_cast<Der_2*>(&stm)) 
+{
+  ...
+}
+
+You cannot use dynamic_cast if you downcast (cast to a derived class).
+And the argument type is not polymorphic. 
+
+An "up-cast" (cast to the base class) is always valid with both static_cast and dynamic_cast, 
+and also without any cast, as an "up-cast" is an implicit conversion.
+
 
 Down->top
 Base* ptr = new Der(); // dynamic_cast should use here
@@ -1404,6 +1572,26 @@ Abstract class
 	At least one member function must be pure virtual function
 pure Abstract class / Interface
 	All member function must be pure virtual function
+
+:: RAII ::
+==========
+Resource Aquisition is Initialization
+
+RAII is the design paradigm to ensure that variables handle all needed initialization in their constructors and all needed cleanup 
+in their destructors. This reduces all initialization and cleanup to a single step.
+
+C++ does not require RAII, but it is increasingly accepted that using RAII methods will produce more robust code.
+
+The reason that RAII is useful in C++ is that C++ intrinsically manages the creation and destruction of variables as they enter 
+and leave scope, whether through normal code flow or through stack unwinding triggered by an exception. That's a freebie in C++.
+
+By tying all initialization and cleanup to these mechanisms, you are ensured that C++ will take care of this work for you as well.
+
+Talking about RAII in C++ usually leads to the discussion of smart pointers, because pointers are particularly fragile when 
+it comes to cleanup. When managing heap-allocated memory acquired from malloc or new, 
+it is usually the responsibility of the programmer to free or delete that memory before the pointer is destroyed. 
+Smart pointers will use the RAII philosophy to ensure that heap allocated objects are destroyed any time the pointer variable is destroyed.
+
 
 Smart pointer
 =============
@@ -1772,6 +1960,7 @@ advance (it2,6);
 
 
 Insertion/Deletion is not fast than vector : O(n)
+But extra ooverload of shifting elements are not needed in list.
 Accessing is slow : O(n)
 
 //	4. Set	// All operations - O(log n)
@@ -1974,6 +2163,8 @@ int main()
     printf("GeeksforGeeks"); 
     return 0; 
 } 
+
+
 
 
 atoi,	stoi,	stol,	stod
@@ -2316,7 +2507,7 @@ int main()
 					Coffee maker. different type of coffee (Houseblend, darkrost) with different combination(milk,mocha)
 					according to different combination price and discription will change dynamically.
 					
-		Facade:		multiple steps compibine and apper as one by facade
+		Facade:		multiple steps combine and apper as one by facade
 					Provide a unified interface to a set of interfaces in a subsystem. 
 					Facade defines a higher-level interface that makes the subsystem easier to use.
 					Wrap a complicated subsystem with a simpler interface.
@@ -2956,6 +3147,15 @@ int main()
 
 */
 
+Other questions:
+================
+echniques to handle bad allocation exception
+1. Exception handling
+2. Allocate memory dynamically using "new" with
+	//"nothrow" version of new
+	char *ptr = new(std::nothrow) char[CHUNK_SIZE];						
+						
+						
 
 
 
