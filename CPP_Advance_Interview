@@ -1,0 +1,274 @@
+Get run time error: ptr being used without being initialized
+int* ptr;
+cout<<ptr<<endl;
+
+
+Conatiner and smart pointer
+
+All smart pointer can be used with standard container except unique_ptr.
+Why?
+	Because whenever we push elements into any standard container,
+	Copy of that element has been created and then push into the container.
+	But,
+		unique_ptr not allowed to copy.
+	
+	// Not allowed
+	int a =10;
+	vector<unique_ptr<int>> v1;
+	unique_ptr<int> ptr(new int(a));
+	v1.push_back(ptr);
+	
+	
+	// Allowed
+	int a =10;
+	vector<shared_ptr<int>> v1;
+	shared_ptr<int> ptr(new int(a));
+	v1.push_back(ptr);
+
+
+// unique / shared Pointer Implementation
+#########################################
+class Driver
+{
+public:
+	string name;
+
+public:
+	Driver(string _name)
+	{
+		cout<<_name<<": Constructor"<<endl;	
+		name = _name;
+	}
+	Driver()
+	{
+		cout<<"Constructor"<<endl;	
+	}
+	void print()
+	{
+		cout<<"Print fun called"<<endl;
+	}
+	~Driver()
+	{
+		cout<<this->name<<": Destructor"<<endl;
+	}
+};
+
+
+template<typename T>
+class MyUniquePtr
+{
+	private:
+		T* ptr;
+		
+		
+	public:
+	    static int count;
+		MyUniquePtr(const MyUniquePtr& obj)
+		{
+		    this->ptr = obj.ptr;
+		    count++;
+		}
+		MyUniquePtr& operator=(const MyUniquePtr& obj)
+		{
+		    this->ptr = obj.ptr;
+		    count++;
+		}
+		MyUniquePtr()
+		{
+		    ptr = NULL;
+		}
+		MyUniquePtr(T* _ptr)
+		{
+			ptr = _ptr;
+			count++;
+		}
+		T* operator->()
+		{
+			return ptr;
+		}
+		T& operator*()
+		{
+			return *ptr;
+		}
+		~MyUniquePtr()
+		{
+		    //delete ptr;
+		    cout<<"In Distructor"<<endl;
+		    count--;
+			if(ptr && count==0)
+			{
+				delete ptr;
+			    ptr = NULL;
+			}
+		}
+};
+template<typename T>
+int MyUniquePtr<T>::count = 0;
+int main()
+{
+	{
+		MyUniquePtr<Driver> ptr1(new Driver("A"));
+		ptr1->print();
+		MyUniquePtr<Driver> ptr2(ptr1);
+		cout<<MyUniquePtr<Driver>::count<<endl;
+	}
+cout<<MyUniquePtr<Driver>::count<<endl;
+    
+    
+	//_getch();
+	return 1; 
+}
+
+
+
+
+Implement custom iterator class for LinkList:
+https://www.geeksforgeeks.org/implementing-iterator-pattern-of-a-single-linked-list/
+
+#include "stdafx.h"
+#include <conio.h>
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <string>
+//#include <bits/stdc++.h> 
+using namespace std;
+
+
+int main()
+{
+	cout<<"Test"<<endl;
+
+	LinkList<int> l;
+	l.push_back(1);
+	l.push_back(2);
+	l.push_back(3);
+	l.push_back(4);
+	//cout<<l.getRootNode()->data;
+
+	LinkList<int>::Iterator it = l.begin();
+	cout<<*it<<endl;
+	l.Traverse();
+}
+
+
+template<typename T>
+class LinkList
+{
+private:
+	class Node;
+	static Node* root;
+
+	class Node
+	{
+	private:
+		int data;
+		Node* next;
+		friend class LinkList;
+	};
+	Node* getNewNode(T data)
+	{
+		Node* n = new Node();
+		n->data = data;
+		n->next = nullptr;
+		return n;
+	}
+	Node*& getRootNode()
+	{
+		return root;
+	}
+
+public:
+	LinkList()  
+	{
+		root = nullptr;
+	}
+	class Iterator;
+
+	Iterator begin()
+	{
+		return Iterator(root);
+	}
+	Iterator end()
+	{
+		return Iterator(nullptr);
+	}
+	void push_back(T data) 
+	{ 
+		Node* pTemp = getNewNode(data); 
+		if (!getRootNode()) 
+		{ 
+			getRootNode() = pTemp; 
+		} 
+		else
+		{ 
+			Node* pCrawler = getRootNode(); 
+			while (pCrawler->next) 
+			{ 
+				pCrawler = pCrawler->next; 
+			} 
+  
+			pCrawler->next = pTemp; 
+		} 
+	}	 
+	void Traverse() 
+	{ 
+		Node* pCrawler = getRootNode(); 
+  
+		while (pCrawler) 
+		{ 
+			cout << pCrawler->data << " "; 
+			pCrawler = pCrawler->next; 
+		} 
+  
+		cout << endl; 
+	}
+
+	class Iterator
+	{
+	private:
+		const Node* currentNode;
+	public:
+		Iterator() :currentNode(root){}
+		Iterator(Node* node) :currentNode(node){}
+
+		Iterator& operator=(Node* node)
+		{
+			this->currentNode = node;
+			return *this;
+		}
+		//++
+		Iterator& operator++()
+		{
+			if(currentNode)
+			{
+				this->currentNode = this->currentNode->next;
+			}
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator it = *this;
+			++*this;
+			return it;
+		}
+
+		bool operator!=(const Iterator& iterator)
+		{
+			return currentNode!=iterator.currentNode; 
+		}
+
+		int operator*()
+		{
+			return currentNode->data;
+		}
+	};
+	
+};
+
+//static Node* template<typename T> LinkList::root;
+
+template<typename T> 
+typename LinkList<T>::Node* LinkList<T>::root=nullptr;

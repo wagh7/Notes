@@ -1,0 +1,47 @@
+Bitwise
+
+Detect if two integers have opposite signs?
+X-OR two integers. 
+(a^b) < 1 // Then its opposite
+
+
+check an integer is a power of 2?
+flag = (data & (data - 1))); // zero means its a power of 2.
+ 
+set a particular bit in C
+	cData = cData | (1<<iPos);
+
+clear a particular bit in C
+	Number  &=  ~ (1<< nth Position)
+	
+check if a particular bit is set in C
+	Bit = Number & (1 << nth)  // If bit is not zero then bit is set else its zero
+
+toggle a particular bit in C
+	Number  ^=  (1<< nth Position)
+
+to count set bits in an integer?
+ while (n)
+    {
+        CountSetBits += n & 1;
+        n >>= 1;
+    }
+
+Left and Right rotate
+#define INT_BITS 32
+#define ROTATE_LEFT(pos, data) ((data << pos)|(data >> (INT_BITS - pos)))
+#define ROTATE_RIGHT(pos, data) ((data >> pos)|(data << (INT_BITS - pos)))
+
+
+Swap two numbers without using a temporary variable?
+*a = *a ^ *b;
+*b = *a ^ *b;
+*a = *a ^ *b;
+
+
+Multiply a number by 2 using bitwise operation
+	data = data << 1; // equivalent to data * 2
+	
+Divide a number by 2 using bitwise operation
+	data = data >> 1; // equivalent to data/2
+

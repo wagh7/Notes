@@ -2,7 +2,7 @@
 ***What Happens When You Type in a URL***
 
 https://www.google.com
-http: 80 - hiper text transfer protocol
+http: 80 - hiper text transfer protocol 
 Https: 443 - secure version of http.
 		uses encryption of request/responses
 		It may be private or public key encryption, depends on web server
@@ -321,7 +321,7 @@ Details
 =======
 
 HTTP: (https://www.tutorialspoint.com/http/http_overview.htm) - PORT-80
-1. Connectionless
+1. Connection oriented but stateless
 2. Media independent
 	Any type of data can be send by HTTP, as long as both client/server knows how to handle data
 Stateless
@@ -504,25 +504,4 @@ socket()
 connect()
 send()/Receive()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 

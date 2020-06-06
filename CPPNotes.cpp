@@ -192,6 +192,9 @@ void f(Y obj) {
 
 char*
 =====
+char* str = "Akash";   // str[0]='a'; // not allowed // value is const
+char s[9] = "Damodhar";  // s = str; // Not Allowed //  pointer is const
+	
 size_t strlen ( const char * str );
 
 char* str;			// you can get the length of str by using : strlen(str)
@@ -251,6 +254,19 @@ free() should only be used either for the pointers pointing to the memory alloca
 
 Scalar delete:
 Delete[] ptr;
+
+int main() 
+{
+    int** ptr = new int*[3];
+
+	for(int i=0; i<3; i++)
+		ptr[i] = new int[3];
+
+	for(int i=0; i<3; i++)
+		delete[] ptr[i];
+
+	delete[] ptr;
+}
 
 malloc()
 	free() 
@@ -332,10 +348,40 @@ class C : public B
 };
 
 mutable:
-If we need to modify data member in cost fun then we need to declare that data member as mutable.
+If we need to modify data member in cost member fun or by const object then we need to declare that data member as mutable.
 e.g.
-mutable int var;
-Then we can modify this variable in const function.
+class Test
+{
+    //private:
+    public:
+        mutable int dm1=20;
+        int dm2=50;
+    public:
+        Test(){cout<<"Test::Constructor"<<endl;}
+        void fun() const
+        {
+            //this->dm2 = 20;  // Not allowed to update dm2 in  const member function
+            this->dm1 = 10;
+            cout<<dm1<<" "<<dm2<<endl;
+        }
+        ~Test(){cout<<"Test::Destructor"<<endl;}
+};
+
+int main()
+{
+    const Test obj;
+    obj.dm1=19;
+    //obj.dm2=29;  // Not allowed to update dm2 as obj is constant
+    cout<<obj.dm1<<" "<<obj.dm2<<endl;
+    obj.fun();
+    return 0;
+}
+// Case 2
+// If object is constant and want to update value of data member, then that data member needs to declare as mutable.
+const Base obj;
+obj.a =20;
+cout<<obj.a<<endl;
+
 ----------------------------------------------------------------------------------------------------------
 
 Storage Classes in C
@@ -1350,74 +1396,36 @@ C++ supports following 4 types of casting operators:
 3. dynamic_cast RTTI
 4. reinterpret_cast
 
-1.const_cast(take pointer/reference only)
-a. const_cast can be used to change non-const class members inside a const member function.
-e.g.
-class student
-{
-private:
-    int roll;
-public:
-    // constructor
-    student(int r):roll(r) {}
- 
-    // A const function that changes roll with the help of const_cast
-    void fun() const
-    {
-        ( const_cast <student*> (this) )->roll = 5;
-    }
- 
-    int getRoll()  { return roll; }
-};
+1. const_cast
 
-b. const_cast can be used to pass const data to a function that doesn’t receive const.
-class Dev
-{
-    int b;
-    public:
-    Dev(){cout<<"\n"<<"Dev class constructor";}
-    void read(int& a)
-	{
-		a=13;
-		cout<<"\n Dev: read(): "<<a;
-	}
-    
-};
-
-int main()
-{
-	const int a =11;
-    	Dev obj;
-    	obj.read(const_cast<int&>(a));
-    	//obj.read(a);
-	return 0;
-}
-
-c. const_cast is considered safer than simple type casting. It’s safer in the sense that the casting won’t 
-happen if the type of cast is not same as original object. For example, the following program fails in compilation because 
-‘int *’ is being typecasted to ‘char *’
-e.g.
-int main(void)
-{
-    int a1 = 40;
-    const int* b1 = &a1;
-    char* c1 = const_cast <char *> (b1); // Not allowed and gives compiler error
-    *c1 = 'A';
-    return 0;
-}
-
-If we do casting without it then no error thrown but its not safe at all:
-int a =10;
-int* b = &a;
-char* c = (char*)b; // c hold nothing no value I.e. copying not done successfully 
+	C-style casts are prone to errors because they are such a blunt instrument. 
+	With C++ casts, you indicate your intention and the compiler can check to see if your intention is legal.
 
 
-d. const_cast can also be used to cast away volatile attribute.
-int a1 = 40;
-const volatile int* b1 = &a1;
-cout << "typeid of b1 " << typeid(b1).name() << '\n';
-int* c1 = const_cast <int *> (b1);
-cout << "typeid of c1 " << typeid(c1).name() << '\n';
+	// Ex1
+	const char* str1 = "string";
+	//char* str2 = (char*)str1;        // C style
+	char* str2 =  const_cast<char*>(str1);
+	cout<<str2<<endl;  // string
+
+	// Ex2
+	const char* str = "string";
+	fun(const_cast<char*>(str));
+	
+	 // Ex3
+	int a = 10;
+	const int* ptr = &a;
+	char* str3 = (char*)ptr;  // No compile time error
+	cout<<*str3<<endl;			// Nothing will print
+	//char* str4 = const_cast<char*>(ptr);  // Compile Error::Not allowed to cast int pointer to char pointer
+
+	// Ex4
+	// const volatile int* to int*
+	int no = 10;
+	const volatile int* ptrNo = &no;
+	// int* newPtr = ptrNo;  // Compile time Error:: Not allowed
+	int* newPtr = const_cast<int*>(ptrNo);
+
 
 typeid and type_info
 ======================
@@ -1434,39 +1442,80 @@ static_cast can perform conversions between pointers to related classes, not onl
 For class pointer: Upcast and downcast
 For class object : only Upcast
 
-//Example 1
-	float bb = 10.23;
-	int aa = static_cast<int>(bb);
-
-//Example 2
-	Base* obj1;
-	Derived* obj3 = static_cast<Derived*>(obj1);
-
-
 class Base
 {
-    int a;
-    public:
-    Base(){cout<<"\n"<<"Base class constructor";}
-    void read1(){cout<<"\n Base: read()";}
+private:
+	int a;
+public:
+	Base()
+	{
+		cout<<"Base::Constructor"<<endl;
+	}
+	~Base()
+	{
+		cout<<"Base::Destructor"<<endl;
+	}
+	void print()
+	{
+		cout<<"Base::print"<<endl;
+	}
+};
+class Der : public Base
+{
+private:
+	int b;
+public:
+	int x;
+	Der()
+	{
+		cout<<"Der::Constructor"<<endl;
+	}
+	~Der()
+	{
+		cout<<"Der::Destructor"<<endl;	
+	}
+	void print()
+	{
+		cout<<"Der::Print"<<endl;
+	}
 };
 
-class Dev: public Base
-{
-    int b;
-    public:
-    Dev(){cout<<"\n"<<"Dev class constructor";}
-    void read2(){cout<<"\n Dev: read()";}
-};
+// implicit static casting allowed
+float f = 3.5; 
+int a = f; // this is how you do in C 
+//int b = static_cast<int>(f);  // Allowed
+int b = f;
+cout << b;
 
-int main()
-{
-	Base obj1;
-	Dev* obj2;
-	obj2 = static_cast<Dev*>(&obj1);
-	obj2->read1();  // Base class function gets called
-	return 0;
-}
+// C style allowed but C++ casting Not allowed
+int a = 10;
+int* ptrA = &a;
+float* fptr = (float*)ptrA;
+//float* fptr = static_cast<float*>(ptrA);
+
+
+// Up casting Always allowed
+Der derObj;
+//Base baseObj = derObj;
+Base baseObj = static_cast<Base>(derObj);
+
+// Up casting, When private inheritance
+Der* newptr = new Der();
+Base* newptr1 = (Base*)newptr;  // Allowed
+//Base* newptr1 = static_cast<Base*>(newptr);  // Not Allowed
+
+
+// Down Casting with object always not allowed
+Base baseObj1;
+//Der derObj1 = (Der)baseObj1; // Not allowed
+//Der derObj1 = static_cast<Der>(baseObj1);  // Not allowed
+
+// Down Casting with pointer allowed with explicit casting, but its not safe.
+Base basePtr1;
+//Der* derPtr1 = (Der*)&basePtr1; // allowed
+Der* derPtr1 = static_cast<Der*>(&basePtr1);  // Allowed
+derPtr1->print();   // Derived class print function gets called
+cout<<derPtr1->x;  // Not safe while accessing derived class specific date
 
 
 Dynamic_cast(take pointer/reference only)
@@ -1501,8 +1550,9 @@ Der* ptr = new Base(); // Error
 
 Reinterpret
 ============---------------------------------------------------------------
-reinterpret_cast converts any pointer type to any other pointer type, even of unrelated classes. The operation result is a simple binary copy of the value from one pointer to the other. All pointer conversions are allowed: neither the content pointed nor the pointer type itself is checked
-
+reinterpret_cast converts any pointer type to any other pointer type, even of unrelated classes. 
+The operation result is a simple binary copy of the value from one pointer to the other. 
+All pointer conversions are allowed: neither the content pointed nor the pointer type itself is checked
 
 ----------------------Object Slicing----------------------
 In C++ In C++, a derived class object can be assigned to a base class object, but the other way is not possible. 
@@ -1611,7 +1661,10 @@ shared_ptr
 Auto_ptr
 	Auto deleted when goes out of scope
 	It allows to change the ownership.
-	Since auto_ptr objects take ownership of the pointer they point to, when a new auto_ptr is constructed from another auto_ptr, the former owner releases it.
+	It takes ownership of the pointer in a way that no two pointers should contain the same object. 
+	Assignment transfers ownership and resets the rvalue auto pointer to a null pointer. 
+	Thus, they can’t be used within STL containers due to the aforementioned inability to be copied.
+	
 	e.g.
 	auto_ptr<int> p1(new int(10));
     	auto_ptr<int> p2;
@@ -1628,6 +1681,7 @@ Auto_ptr
 	Algorithms, such as those involved in sorting STL containers, often copy objects while carrying out their tasks.
 
 Unique_ptr
+==========
 	Auto deleted when goes out of scope and also not allowed to make copy of this.
 	get(): get the memory address of pointer
 	move():
@@ -1643,49 +1697,97 @@ Use:
 	unique_ptr<Top> ptr(new Top());
     	ptr->Fun1();
 
+With STL::container
+	unique_ptr<Base> uptr1(new Base());
+	vector<unique_ptr<Base>> v;
+	v.push_back(std::move(uptr1));
+	uptr1->print();  // once move to other, uptr1 not allowed to use and get exception.
+	
 SharedPtr
+=========
 	Can make copy of this type of pointer.
 	It maintains a reference count internally and only deletes the resource when the reference count goes to zero.
 	copy:
 	shared_ptr<A> p1 (new A); 
-    	shared_ptr<A> p2 (p1); 
-	get(): get the memory address of pointer
+    shared_ptr<A> p2 (p1); 
+	get(): get the memory address of pointer 
 	use_count(): get the count of total number string this pointer
+
+make_shared()
+This function uses ::new to allocate storage for the object. 
+A similar function, allocate_shared, accepts an allocator as argument and uses it to allocate the storage.
+allocate_shared()
+	Same as above but it use alloc() to allocate memory.
+	
+shared_ptr<int> sptr = make_shared<int>(10);
+
+
+weak_ptr
+========
+	shared_ptr<Base> sptr1(new Base("sptr1"));
+	shared_ptr<Base> sptr2 = make_shared<Base>(obj);
+
+	weak_ptr<Driver> wptr1 = sptr1;
+	if(sptr1 = wptr1.lock())
+		sptr1->print();
+	else
+		cout<<"mptr1 is expired"<<endl;
+
+
 
 ***Avoiding cyclic references when using shared pointers***
 In many situations , when a class contains a shared_ptr reference , you can get into cyclical references. 
-Consider the following scenario – we want to create two Aircraft objects – one flown my Maverick and one flown by Iceman 
-Both maverick and Iceman needs to hold a reference to each Other Wingman.
 
-So our initial design introduced a self referential shared_ptr inside the Aircraft class:
+So our initial design introduced a self referential shared_ptr inside the Driver class:
 
-class Aircraft
+class Driver
 {
-private:
-       string m_model;
 public:
-       int m_flyCount;
-       shared_ptr<Aircraft> myWingMan;
-….
+	string name;
+	weak_ptr<Driver> partner;  // If shared_ptr used instead of weak_ptr then cyclic dependancy 
+							  // created and therefore destructor never gets called 
 
-Then in our  main() , we create Aircraft objects, Maverick and Goose , and make them each other’s wingman:
-
-
+public:
+	Driver(string _name)
+	{
+		cout<<_name<<": Constructor"<<endl;	
+		name = _name;
+	}
+	Driver()
+	{
+		cout<<"Constructor"<<endl;	
+	}
+	void print()
+	{
+		shared_ptr<Driver> sh = partner.lock();
+		cout<<name<<" partenr : "<<sh->name<<endl;
+	}
+	~Driver()
+	{
+		cout<<this->name<<": Destructor"<<endl;
+	}
+};
 
 int main()
 {
-	shared_ptr pMaverick = make_shared("Maverick: F-14");
-	shared_ptr pIceman = make_shared("Iceman: F-14");
+	shared_ptr<Driver> obj1 = make_shared<Driver>("A");
+	shared_ptr<Driver> obj2 = make_shared<Driver>("B");
+	//OR
+	//shared_ptr<Driver> obj1(new Driver("A"));
+	//shared_ptr<Driver> obj2(new Driver("B"));
+ 
+	obj1->partner = obj2;
+	obj2->partner = obj1;
 
-	pMaverick->myWingMan = pIceman; // So far so good - no cycles yet
-	pIceman->myWingMan = pMaverick; // now we got a cycle - neither maverick nor goose will ever be destroyed
-
-	return 0;
+	obj1->print();
+	obj2->print();
 }
-When main() returns, we expect the two shared pointers to be destroyed – but neither is because they contain cyclical references to one another. 
-Even though the smart pointers themselves gets cleaned from the stack, the objects holding each other references keeps both the objects alive.
+
+
 	
 //	Auto_ptr	//
+#################
+
 class Person
 {
 	Private:
@@ -2254,6 +2356,9 @@ class Singleton
 
 Singleton* Singleton::ptrSingleton = NULL;
 
+#include <mutex>
+#include <atomic>
+
 Double checked locking:
 class Foo {
 public:
@@ -2568,7 +2673,7 @@ void Subject::notify() {
   // 5. Publisher broadcasts
   for (int i = 0; i < views.size(); i++)
     views[i]->update();
-}
+} 
 
 class DivObserver: public Observer {
   public:
@@ -2712,6 +2817,8 @@ https://stackoverflow.com/questions/2023977/difference-of-keywords-typename-and-
 
 =========================================== :: Advance C++11 :: ========================================
 ========================================================================================================
+constant data members can initialise while declaration.
+const int a = 10;
 
 syntax to use C++11 features while compilation:
 	g++ -std=c++11 -o output.out source.cpp
@@ -3052,7 +3159,7 @@ Can we do “delete this”?
 --------------------
 Class ABC
 {
-    	int a;
+    int a;
 	int* ptr;
 	public:
 	ABC(ABC& obj)		// call by reference
@@ -3060,7 +3167,7 @@ Class ABC
 	ABC(ABC&& obj)		// call by rvalue reference
 	{
 		this->ptr = obj.ptr;
-		obj.ptr = nulptr;
+	 	obj.ptr = nulptr;
 	}
 };
 
@@ -3071,8 +3178,7 @@ ABC getObject()
 } 
 Int main()
 {
-	ABC obj1;
-	obj1 = getObject();	// call by rvalue reference
+	ABC obj1 = getObject();	// call by rvalue reference
 }
 
 Example:

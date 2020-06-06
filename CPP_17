@@ -1,0 +1,63 @@
+
+#######################
+If and Switch : local varibale allowed
+C++17 introduces the ability for if and switch statements to declare and initialize a locally-scoped variable, 
+in much the same way that for loops have always allowed.
+
+#####################
+std::tuple and std::make_tuple
+Structured Binding
+
+#include <tuple>
+
+std::tuple<double, char, std::string> get_student(int id)
+{
+    if (id == 0) return std::make_tuple(3.8, 'A', "Lisa Simpson");
+    if (id == 1) return std::make_tuple(2.9, 'C', "Milhouse Van Houten");
+    if (id == 2) return std::make_tuple(1.7, 'D', "Ralph Wiggum");
+    throw std::invalid_argument("id");
+}
+
+//use
+	double gpa1;
+    char grade1;
+    std::string name1;
+    std::tie(gpa1, grade1, name1) = get_student(1);
+    std::cout << "ID: 1, "
+              << "GPA: " << gpa1 << ", "
+              << "grade: " << grade1 << ", "
+              << "name: " << name1 << '\n';
+
+// C++17 structured binding:
+    auto [ gpa2, grade2, name2 ] = get_student(2);
+    std::cout << "ID: 2, "
+              << "GPA: " << gpa2 << ", "
+              << "grade: " << grade2 << ", "
+              << "name: " << name2 << '\n';
+
+
+Fold expressions
+################
+Fold expressions come in two flavors: unary folds (as shown above) and binary folds
+
+If you were writing a generic function to sum all of the parameters 
+(with the requirement that the types involved support the binary + operator and the sum function requires one or more arguments) 
+
+Unary:
+with fold expressions in C++17, that code can be reduced to:
+
+  template <typename... Ty>
+  auto sum(Ty... args) {
+    return (args + ...);
+  }
+Binary:  
+circumstances where you want control over the initial element in the fold, 
+such as in this example where we want to stream all of the arguments to the standard output stream:
+
+  #include <iostream>
+
+  template <typename... Ty>
+  void f(Ty... args) {
+   (std::cout << ... << args) << std::endl;
+  }
+  

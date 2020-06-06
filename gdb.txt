@@ -11,6 +11,7 @@ GDB
 3
 >thread 1{shows the curser or control on which line}
 Other gdb commands:
+l  : to list the program
 run
 set args [arg1] [arg2]
 list
@@ -46,11 +47,18 @@ if gcore is not available on your system then:
 Recording Application Crashes with Core Dumps
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/developer_guide/debugging-crashed-application
 To record application crashes, set up core dump saving and add information about the system.
-1. Enable core dumps. Edit the file /etc/systemd/system.conf and change the line containing DefaultLimitCORE to the following: DefaultLimitCORE=infinity 
-2. Reboot the system: # shutdown -r now 
-3. Remove the limits for core dump sizes: # ulimit -c unlimited To reverse this change, run the command with value 0 instead of unlimited.
-4. When an application crashes, a core dump is generated. The default location for core dumps is the application’s working directory at the time of crash.
-5. Create an SOS report to provide additional information about the system: # sosreport This creates a tar archive containing information about your system, such as copies of configuration files. 
+1. Enable core dumps. Edit the file /etc/systemd/system.conf and change the line containing DefaultLimitCORE to the following:
+DefaultLimitCORE=infinity
+2. Reboot the system:
+# shutdown -r now 
+3. Remove the limits for core dump sizes:
+# ulimit -c unlimited
+To reverse this change, run the command with value 0 instead of unlimited.
+4. When an application crashes, a core dump is generated. 
+The default location for core dumps is the application’s working directory at the time of crash.
+5. Create an SOS report to provide additional information about the system:
+# sosreport
+This creates a tar archive containing information about your system, such as copies of configuration files.
 Inspecting Application Crash States with Core Dumps
 To identify the executable file where the crash occurred, run the eu-unstrip command with the core dump file:
 eu-unstrip -n --core=./core.9814
@@ -83,32 +91,55 @@ Debug Programs on Remote Server using GDBServer Example:
 Remote Debugging
 ==============
 Windows:
+
+ msvsmon.exe.
+ 
+ 
 https://www.cprogramming.com/tutorial/visual_studio_remote_debugging.html
 https://www.thegeekstuff.com/2014/04/gdbserver-example/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%253A+TheGeekStuff+(The+Geek+Stuff)
 Windows:
 https://docs.microsoft.com/en-us/visualstudio/debugger/remote-debugging?view=vs-2019
 
-NOTE: Remote Debugging capability is not available in Visual Studio 2005/2008 Express. It also does not work on Windows XP Home edition, you will get an error saying "Not supported on this edition of Windows."
+NOTE: Remote Debugging capability is not available in Visual Studio 2005/2008 Express. 
+It also does not work on Windows XP Home edition, you will get an error saying "Not supported on this edition of Windows."
 
-Remote Debugging is simply the idea of running a process on a separate machine and then attaching to this process via the debugger in Visual Studio. Once this connection to the remote process is established, as far as the debugger is concerned it appears that the process is running locally.
+Remote Debugging is simply the idea of running a process on a separate machine and then attaching 
+to this process via the debugger in Visual Studio. 
+Once this connection to the remote process is established, as far as the debugger is concerned it appears that the process is running locally.
 
 Target Machine - The computer that is running the remote debugging server and the application/process that needs to be debugged.
 Host Machine - The machine that is running the Visual Studio debugger
 
-The beauty of this is that you do not have to have Visual Studio installed on the machine just to debug the application, you can do it remotely on another machine that does have Visual Studio installed.
+The beauty of this is that you do not have to have Visual Studio installed on the machine just to debug the application, 
+you can do it remotely on another machine that does have Visual Studio installed.
 
 Make sure that your application is over on the target machine, 
-while your program database file (commonly called <filename>.pdb) is located on the host machine; this file contains symbol information that the debugger will need to load once it attaches to the process. Also make sure that the executable you copy over is a binary match to the build of your source code, otherwise your debugger will not be synchronized and there will be all sorts of problems tracing through the code.
+while your program database file (commonly called <filename>.pdb) is located on the host machine; 
+this file contains symbol information that the debugger will need to load once it attaches to the process. 
+Also make sure that the executable you copy over is a binary match to the build of your source code, 
+otherwise your debugger will not be synchronized and there will be all sorts of problems tracing through the code.
 
-PDB is a debug information file used by Visual Studio. These are system DLLs, which you don't have debug symbols for. 
-Go to Tools->Options->Debugging->Symbols and select checkbox "Microsoft Symbol Servers", Visual Studio will download PDBs automatically. Or you may just ignore these warnings if you don't need to see correct call stack in these modules.
+PDB is a debug information file used by Visual Studio. 
+These are system DLLs, which you don't have debug symbols for. 
+Go to Tools->Options->Debugging->Symbols and select checkbox "Microsoft Symbol Servers", 
+Visual Studio will download PDBs automatically. 
+Or you may just ignore these warnings if you don't need to see correct call stack in these modules.
 
-To set up a remote debugging session, you first need to copy the debug server over to the target machine. Find the folder under your installation directory for visual studio Common7\IDE\Remote Debugger. If you're running Visual Studio 2008 for example it the program path would be [drive]:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\Remote Debugger.
+To set up a remote debugging session, you first need to copy the debug server over to the target machine. 
+Find the folder under your installation directory for visual studio Common7\IDE\Remote Debugger. 
+If you're running Visual Studio 2008 for example it the program path would be [drive]:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\Remote Debugger.
 Copy this entire directory to the target machine that is running the process you would like to debug. You can put it in a directly anywhere on the drive.
 
 On Target machine: Launch your application. Next, go into the directory you put the remote debugger in and launch msvsmon.exe.
 
 On your host machine:
-In Visual Studio go to Tools->Attach to process (Ctrl-Alt-P) and open up the Attach to Process dialog. Change the Transport to Remote (Native only with no authentication). Next where it says .Qualifier. you're going to have to click the Browse button to search for your target machine on the network Once you find your target machine the Attach to Process dialog will refresh with the processes that are running on the other system.
-Scroll down until you see the process you want to attach to. Click Attach. Once you do this the debugger will attach to this remote process and you can begin debugging as if you were running the application locally.
+In Visual Studio go to Tools->Attach to process (Ctrl-Alt-P) and open up the Attach to Process dialog. 
+Change the Transport to Remote (Native only with no authentication). Next where it says .Qualifier. 
+you're going to have to click the Browse button to search for your target machine on the network 
+Once you find your target machine the Attach to Process dialog will refresh with the processes that are running on the other system.
+Scroll down until you see the process you want to attach to. 
+Click Attach. 
+Once you do this the debugger will attach to this remote process and you can begin debugging as if you were running the application locally.
 
+Wingdb
+=====

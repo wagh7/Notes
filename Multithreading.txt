@@ -1,5 +1,13 @@
 Multi-Threading
 
+To set the priority in threads:
+In POSIX, pthread_setschedparam(thread.native_handle(), policy, {priority});
+
+Thread:
+	light weight running instance.
+	Thread have seperate stack.
+	Thread uses heap of its process.(i.e. dont hvae separate heap)
+
 Asynchronous process:
 In computer programs, asynchronous operation means that a process operates independently of other processes.
 Synchronous process:
@@ -11,9 +19,12 @@ Race Condition:
 How communicate multiple threads in multi-core environment?
 Shared cash.
 
-When use multi-threads and when use multi-process? 
-If you decide to go with threads you will restrict your app to be run on a single machine. This solution doesn't scale (or scales to some extent) - there are always hardware limits.
-And different processes communicating via sockets can be distributed between machines, so that you could add virtually unlimited number or them. This scales better at the cost of slow communication between processes.
+When use multi-threads and when use multi-process?  
+If you decide to go with threads you will restrict your app to be run on a  single machine. 
+This solution doesn't scale (or scales to some extent) - there are always hardware limits.
+And different processes communicating via sockets can be distributed between machines, 
+so that you could add virtually unlimited number or them.
+This scales better at the cost of slow communication between processes.
 
 
 #include <iostream>
@@ -32,6 +43,7 @@ Class foo
 		void f3()
 		{}
 };
+
 Void f1(int a)
 {}
 void f2(int &a)
@@ -252,6 +264,9 @@ The thread that intends to modify the variable has to
 2. perform the modification while the lock is held
 3. execute notify_one or notify_all on the std::condition_variable (the lock does not need to be held for notification)
 
+If there are ten threads blocked on the condition variable, 
+for example, notify_one() will unblock only one thread, while notify_all() will unblock them all.
+
 // In below code CPU usage - 100%
 bool var = true;
 void ThreadFun(mutex& m)
@@ -337,7 +352,7 @@ Worker thread signals data processing completed
 Back in main(), data = Example data after processing
 
 Atomic:
-=====
+=======
 Double checked locking:
 class Foo {
 public:
@@ -363,11 +378,18 @@ Foo* Foo::Instance() {
 
 How Can You Create Background Tasks With C++11 Threads?
 Answer :
-You can make a std::thread run in the background by calling std::thread::detach() on it. Once detached, a thread continues to run in the background and cannot be communicated with or waited upon to complete. When you detach a thread, the ownership and control passes over to the C++ Runtime Library, which ensures that the resources allocated to the thread are deallocated once the thread exits.
+You can make a std::thread run in the background by calling std::thread::detach() on it. 
+Once detached, a thread continues to run in the background and cannot be communicated with or waited upon to complete. 
+When you detach a thread, the ownership and control passes over to the C++ Runtime Library, 
+which ensures that the resources allocated to the thread are deallocated once the thread exits.
 
 Can The Ownership Of C++11 Threads Be Transferred At Runtime?
 Answer :
-Yes. std::thread object owns a resource, where the resource is a current thread of execution. You can call std::move to move the ownership of the underlying resource from one std::thread object to another. The question is – why would you want to do that? Here's a scenario:You want to write a function that creates a thread but does not want to wait for it to finish. Instead it wants to pass the thread to another function which will wait for the thread to finish and execute some action once the execution is done.
+Yes. std::thread object owns a resource, where the resource is a current thread of execution. 
+You can call std::move to move the ownership of the underlying resource from one std::thread object to another. 
+The question is – why would you want to do that? 
+Here's a scenario:You want to write a function that creates a thread but does not want to wait for it to finish. 
+Instead it wants to pass the thread to another function which will wait for the thread to finish and execute some action once the execution is done.
 E.g.
 void FireHTTPGet()
 {
@@ -416,7 +438,7 @@ pthread_cond_t* cond;
 
 void fun(void* x1)
 {
-	int x = *(int*)x1;
+ 	int x = *(int*)x1;
 	
 	while(1)
 	{

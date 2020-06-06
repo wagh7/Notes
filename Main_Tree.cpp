@@ -97,6 +97,7 @@ void CreateBST(node** bst, int no)
 		(*bst)->value = no;
 		(*bst)->Lchild = NULL;
 		(*bst)->Rchild = NULL;
+		return;
 	}
 	else
 	{
@@ -107,7 +108,7 @@ void CreateBST(node** bst, int no)
 	}
 }
 //Inorder - Recursive method
-void 	1qszdx(node* root)
+void Inorder(node* root)
 {
 	node* temp = root;
 	if (root == NULL)
@@ -531,6 +532,18 @@ bool isCousin(node* rt, node* n1, node* n2)
 			return true;
 		return false;
 	}
+
+//Level, compare with node value
+int getLevel_1(node* rt, int n, int l)
+{
+	if(rt == NULL)
+		return l;
+	if(rt->data == n)
+		return l;
+	
+	getLevel_1(rt->left, n, l+1);
+	getLevel_1(rt->right, n, l+1);
+}
 	
 int level(node* rt, node* n, int lev)
 	{

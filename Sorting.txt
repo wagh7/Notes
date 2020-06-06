@@ -26,6 +26,7 @@ The new C++11 standard requires that the complexity of sort to be O(Nlog(N)) in 
 
 Selection Sort
 ==============
+O(n * n)
 void SelectionSort(int* Arr, int no)
 {
 	for(int i=0; i<no-1; i++)
@@ -42,27 +43,35 @@ void SelectionSort(int* Arr, int no)
 	}
 }
 
-Bubble Sort
+Bubble Sort  
 ===========
+Best case - O(n) with flag parameter. 
+Average/Worst case - O(n*n)
 void BubbleSort(int* Arr, int no)
 {
+	int flag = 0;
 	for(int i=0; i<no-1; i++)
 	{
 		for(int j=0; j<no; j++)
 		{
 			if(Arr[j] > Arr[j+1])
 			{
+				int flag = 1;
 				int temp = Arr[j];
 				Arr[j] = Arr[j+1];
 				Arr[j+1] = temp;
 			}
 		}
+		if(flag == 0)
+			break;
 	}
 }
 
 
 Insertion Sort
 ==============
+O(n)
+O(n * n)
 void InsertionSort(int* Arr, int no)
 {
 	int j;
@@ -80,40 +89,41 @@ void InsertionSort(int* Arr, int no)
 	}
 }
 
-
 Quick Sort
 ==========
-void QuickSort(int* Arr, int low, int high)
+O(n* n)
+O(n log n)
+void quickSort(int* Arr, int low, int high)
 {
-	int l = low;
+	int l=low+1;
 	int r = high;
-	
-	if(low <= high)
+	if(low<=high)
 	{
-		l = low+1;
-		
-		while(l <= r)
+		while(l<=r)
 		{
-			while(Arr[low] > Arr[l])
+			while(l<high &&  Arr[low] > Arr[l])
 				l++;
-			while(Arr[low] < Arr[r])
+			while(r>low && Arr[low] < Arr[r])
 				r--;
-			if(l < r)
+				
+			if(l<r && Arr[l]!=Arr[r])
 			{
-				int temp = Arr[l];
-				Arr[l] = Arr[r];
-				Arr[r] = temp;
+				swap(Arr[l], Arr[r]);
 			}
+			if(l==r)
+				break;
 		}
-		
-		int temp = Arr[r];
-		Arr[r] = Arr[low];
-		Arr[low] = temp;
-		
-		QuickSort(Arr, low, r-1);
-		QuickSort(Arr, r+1, high);
+		if(Arr[r] != Arr[low])
+		{
+			swap(Arr[low],Arr[r]);
+		}
+		quickSort(Arr, low, r-1);
+		quickSort(Arr, r+1, high);
 	}
 }
+
+//Heap Sort
+O(n log n)
 
 void heapify(int arr[], int n, int i)
 {
@@ -198,12 +208,13 @@ void countSort(char arr[])
 
 Merge Sort
 ==========
+O(n log n)
 
 void merge(int Arr[], int left, int mid, int right)
 {
 	int i=left;
 	int j=mid+1;
-	int k=0;
+	int k=left;
 	int temp[50];
 	while(i<=mid && j<=right)
 	{
@@ -224,7 +235,7 @@ void merge(int Arr[], int left, int mid, int right)
 	{
 		temp[k]=Arr[i];
 		k++;
-		I++;
+		i++;
 	}
 	while(j<=right)
 	{
@@ -251,6 +262,27 @@ void mergeSort(int Arr[], int left, int right)
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+8.50
+1.50
+---------
+10 
+
+
+48 - 35 = 13
 
 
 

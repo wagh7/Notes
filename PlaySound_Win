@@ -1,0 +1,16 @@
+Play sound in windows:
+
+#include <windows.h>
+#include <mmsystem.h>
+#include <cstdio>
+
+int main()
+{
+	cout<<"Test PlaySound"<<endl;
+	PlaySound(TEXT("test.wav"), NULL, SND_FILENAME | SND_ASYNC);
+
+        getchar();
+}
+
+
+Don't forget to link 'winmm.lib

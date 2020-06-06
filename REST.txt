@@ -77,7 +77,8 @@ Trasnposition:
 	Row transposition cipher
 
 Load Balance:
-A load balancer is a device that acts as a reverse proxy and distributes network or application traffic across a number of servers. Load balancers are used to increase capacity (concurrent users) and reliability of applications.
+A load balancer is a device that acts as a reverse proxy and distributes network or application traffic across a number of servers. 
+Load balancers are used to increase capacity (concurrent users) and reliability of applications.
 
 A load balancer mediates client access requests to servers and intelligently decides which server is best placed to fulfil each request.
 Here are the techniques that load balancers use:
@@ -134,12 +135,11 @@ SINGLE=/sbin/sulogin       <--- changed from sushell to sulogin
 	
 3. Stop the "Interactive startup" by setting "PROMPT=no" in /etc/sysconfig/init
 		
-
-		
-		
+##############################		
 	
 API: Application Programming Interface{e.g. Boost API}
-	A set of functions and procedures that allow the creation of applications which access the features or data of an operating system, application, or other service.
+	A set of functions and procedures that allow the creation of applications which access the features 
+	or data of an operating system, application, or other service.
 		
 SOAP - Simple Object Access Protocol
 	Transfer data from server and client using HTTP and in XML format
@@ -160,8 +160,23 @@ REST Principles:
 	Layered System
 		Server can send executable script/code to client.
 
+REST allows different messaging formats, such as HTML, JSON, XML, and plain text.
+SOAP only allows XML. 
+REST is also a more lightweight architecture, so RESTful web services have a better performance. 
+
+As SOAP is an official protocol, it comes with strict rules and advanced security features 
+such as built-in ACID compliance and authorization. 
+Higher complexity, it requires more bandwidth and resources which can lead to slower page load times.
+
+################################################
+
 Casablanca C++ library for REST API development. 
 	
+POST:
+Request not catched, so result may differ for everry call.
+PUT:
+PUT requests are idempotent.
+
 HTTP verbs
 	GET  	/posts 		->return list / read
 	GET  	/post/id 	->return id details / read
@@ -239,7 +254,18 @@ REST API transfer data between Server and Client in JSON or XML format.
 JSON is easy to parse in specially JAVA/java script.
 JSON format is easy.
 
-e.g. Employees details:
+e.g. 1 Employees details:
+{
+Employee:
+		[
+			{},
+			{},
+			{}
+		]
+
+}
+
+e.g. 2
 
 {
 	Employees:
@@ -284,12 +310,15 @@ SSO: Single Sign On
 
 
 SAML vs. OAuth
-OAuth is a slightly newer standard that was co-developed by Google and Twitter to enable streamlined internet logins. OAuth uses a similar methodology as SAML to share login information. SAML provides more control to enterprises to keep their SSO logins more secure, whereas OAuth is better on mobile and uses JSON.
+OAuth is a slightly newer standard that was co-developed by Google and Twitter to enable streamlined internet logins. 
+OAuth uses a similar methodology as SAML to share login information. 
+SAML provides more control to enterprises to keep their SSO logins more secure, whereas OAuth is better on mobile and uses JSON.
 Facebook and Google are two OAuth providers that you might use to log into other internet sites.
 
 LDAP
 Lightweight Directory Access Protocol
-it is a lightweight client-server protocol for accessing directory services, specifically X.500-based directory services. LDAP runs over TCP/IP or other connection oriented transfer services.
+it is a lightweight client-server protocol for accessing directory services, specifically X.500-based directory services. 
+LDAP runs over TCP/IP or other connection oriented transfer services.
 In a network, a directory tells you where in the network something is located.
 
 An LDAP directory is organized in a simple "tree" hierarchy consisting of the following levels:

@@ -4,13 +4,36 @@ Docker:
 chroot
 A chroot on Unix operating systems is an operation that changes the apparent root directory for the current running process and its children. 
 A program that is run in such a modified environment cannot name files outside the designated directory tree
+This modified environment is known as “chroot jail” or “jailed directory”. Some root user and privileged process are allowed to use chroot command.
 
-Big Endian : move left to right
-little Endian: move right to left
+
+$ mkdir $HOME/jail
+$ mkdir -p $HOME/jail/{bin, lib64}
+$ cd $HOME/jail
+Copy /bin/bash and /bin/ls into $HOME/jail/bin/ location using cp command:
+$ cp -v /bin/{bash, ls} $HOME/jail/bin
+Use ldd command to print shared libraries:
+$ ldd /bin/bash
+
+Copy required libraries into $HOME/jail/lib64/ location using cp command:
+cp -v libraries/displayed/by/above/command $HOME/jail/lib64
+
+Similarly, copy the libraries of ls command into $HOME/jail/lib64 location.
+
+Finally, chroot into your mini-jail:
+$ sudo chroot $HOME/jail /bin/bash
+Now user sees $HOME/jail directory as its root directory. This is a great boost in the security.
+
+
+Big Endian : move left to right  - Network byte order
+little Endian: move right to left - Host byte order
 
 Least significant byte store in the sequence left to right in Big Endian. 
 Least significant byte store in the sequence right to left in Little Endian.
 
+e.g.  0x12345678
+Big Endian:  12 34 56 78
+Little Endian: 78 56 34 12
 
 grep:
 >grep "string" file.txt
@@ -44,66 +67,6 @@ Run Level	Mode			Action
 5		X11			As runlevel 3 + display manager(X)
 6		Reboot			Reboots the system
 
-
-GDB
-====
-Ref: https://www.electricmonk.nl/docs/gdb_debugging/gdb_debugging.html
-gcc -g -wall test.c -o test
-gdb test
-
->list 
-	list down source code.
->r 
-	To run code
->info b
-	To get info of breakpoint
-
-To set breakpoint:
->b line_No
->b function_name
->b file_name : line_No
->b line_no if(vae<10)
-
->n	:	next line for execution
->c 	:	To continue execution
-
-backtrace : bt
->bt
->bt full
-
->f function_no
-	function_no get from backtrace
-
->print var_name
-	To get variable value
-
->display var_name
-
->s
-	step into function
-
->display breakpoint_no
-	To display breakpoint details
-
->q	:	to quite gdb
-
-run gdb with code dump:
-gdb test core_dump_file
-
-To find core dump file:
-> find / -name "*core.*"
-Typical name of the coredump is core.$PID
-
-
-how to generate a core dump for a hung process, the answer is
->gcore <pid>
-
-if gcore is not available on your system then
->kill -ABRT <pid>
-
-ulimit -c unlimited
-
-fedora 18 abrt program is storing core dumps in /var/spool/abrt/ instead of /var/cache/abrt
 
 
 File System
@@ -142,3 +105,27 @@ Well, to avoid these kind of issues, the concept of sticky bit is used.
 # ls -ld allAccess/
 drwxrwxrwt 2 himanshu himanshu 4096 Oct 24 16:19 allAccess/
 
+chmod +t allAccess/
+
+# ls -ld allAccess/
+drwxrwxrwt 2 himanshu himanshu 4096 Oct 24 16:19 allAccess/
+
+
+https://linux-audit.com/file-permissions-of-the-etc-shadow-password-file/
+
+Passwd file
+The password file stores local accounts of the system. It is a readable text file and uses colons (:) to separate the fields. 
+In this file the account names, identifiers, and other descriptive fields are stored
+
+x => In passwd file x means password is in shadow file
+
+
+
+Shadow file
+Like the passwd file, the /etc/shadow file inherits most of the same fields and values:
+ the password is not stored in /etc/passwd, but in /etc/shadow. It is stored as a long string of characters,
+ which is a combination of the hashing algorithm, optional salt applied, and the hashed password itself.
+
+Permissions of /etc/shadow
+	[root@arch01 ~]# ls -l /etc/shadow
+	-rw------- 1 root root 823 Dec 7 19:59 /etc/shadow

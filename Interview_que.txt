@@ -1,3 +1,39 @@
+// 2020 //
+###Mutable###
+Done
+###Volatile###
+Done
+###Casting###
+Case 1:
+   const char* str1 = "test string";
+    
+    //char* str2 = str1; // Compile Error::invalid conversion from const char* to char*
+    char* str2 = const_cast<char*>(str1);
+    
+    str2="updated";
+    str1="changed";
+    cout<<"str1:"<<str1<<endl;
+    cout<<"str2:"<<str2<<endl;
+
+Case 2:
+
+###Virtual###
+Done
+
+###Smart Pointer###
+Done
+
+###get lenth of given array###
+
+	int arr[] = {1, 6, 5, 2, 3, 9, 4, 7, 8};
+    cout<<getLen(arr)<<endl;
+    cout<<sizeof(arr)/sizeof(arr[0])<<endl;
+
+
+
+
+
+// 2019 //
 Questions
 
 Networking issues/troubleshooting related questions?
@@ -7,8 +43,6 @@ Two link list cross each other and after crossing point rest part is same for bo
 Find out the crossing point.
 Sol: Find out the length of both list then set the pointer of bigger list same as the smaller list
 Then traverse both list in same loop and check both ptr are same.
-
-
 
 Dhruva
 Problem1: Find out number of palindrome in to given string.
